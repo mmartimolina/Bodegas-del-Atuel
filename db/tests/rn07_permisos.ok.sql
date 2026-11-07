@@ -6,8 +6,8 @@ BEGIN;
 INSERT INTO "Localidad"(id_localidad, codigo_postal, nombre, provincia, encargado_regional)
 OVERRIDING SYSTEM VALUE VALUES (1, '5560', 'General Alvear', 'Mendoza', 'Juan Perez');
 
-INSERT INTO "Cliente"(id_cliente, nombre, tipo_doc, n_doc, localidad, fecha_alta, descuento)
-OVERRIDING SYSTEM VALUE VALUES (2, 'Export Andes SA', 'CUIT', '30712345678', 1, '2024-01-15', 30.00);
+INSERT INTO "Cliente"(id_cliente, nombre, tipo_doc, n_doc, localidad, fecha_alta)
+OVERRIDING SYSTEM VALUE VALUES (2, 'Export Andes SA', 'CUIT', '30712345678', 1, '2024-01-15');
 
 INSERT INTO "Exportador"(id_cliente, pais)
 OVERRIDING SYSTEM VALUE VALUES (2, 'Brasil');

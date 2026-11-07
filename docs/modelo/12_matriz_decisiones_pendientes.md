@@ -444,7 +444,7 @@ OBS-12→DEC-22 · OBS-13→DEC-23 · OBS-14→DEC-24.
 - **Consecuencias:** jerarquía (DEC-11/12), U6 (P-9), triggers de venta.
 - **Recomendación:** A (híbrido consistente: atributo como copia aplicada + función como regla).
 - **¿Decidible?:** Sí como criterio (equipo); el valor concreto del caso U6 requiere docente (P-9).
-- **Estado:** PENDIENTE DE DECISIÓN.
+- **Estado:** ADOPTADA (alternativa A; implementación verificada en la migración 004 y pruebas RN-06).
 
 ### DEC-33 - UNIQUE candidatas de A-09 §6.2 (¿declarar o dejar sin restricción?)
 - **Documentos:** A-09 §6.2 (lista completa), A-10 §5, A-11 OBS-11.
@@ -621,7 +621,7 @@ OBS-12→DEC-22 · OBS-13→DEC-23 · OBS-14→DEC-24.
 | Prioridad | Decisiones | Justificación |
 |---|---|---|
 | **1. Bloqueantes para aprobar A-08 y A-09** | DEC-11, DEC-12, DEC-13 (jerarquía), DEC-41, DEC-42, DEC-47, DEC-51, DEC-52 (decisiones que el DER refleja como abiertas) | A-08/A-09 no pueden declararse aprobados con la jerarquía sin decidir y las alternativas vivas influyendo en el dibujo y en las FKs |
-| **2. Bloqueantes para completar A-10** | DEC-01…DEC-10 (PK y forma de ID), implementación de DEC-14 (matriz NOT NULL), DEC-23 (importes), DEC-24 (acciones referenciales), DEC-32 (Q-01), DEC-33 (UNIQUE) | El diccionario no puede dejar de estar marcado PRELIMINAR hasta completar la documentación de estos puntos |
+| **2. Bloqueantes para completar A-10** | DEC-01…DEC-10 (PK y forma de ID), implementación de DEC-14 (matriz NOT NULL), DEC-23 (importes), DEC-24 (acciones referenciales), DEC-33 (UNIQUE) | El diccionario no puede dejar de estar marcado PRELIMINAR hasta completar la documentación de estos puntos. DEC-32 (Q-01) ya fue adoptada e implementada. |
 | **3. Bloqueantes para la etapa 2 (DDL + Docker/PostgreSQL)** | DEC-01…DEC-10, implementación de DEC-14 en A-10 y DDL, DEC-23, DEC-24, DEC-25, DEC-26, DEC-31, DEC-33, DEC-38, DEC-39, DEC-40, DEC-43, DEC-44, DEC-45, DEC-46, DEC-49, DEC-50 | El DDL necesita PK, tipos y restricciones documentados y coherentes; la adopción de un criterio general no sustituye su implementación |
 | **4. Bloqueantes para A-13 (ENUM/DOMAIN)** | DEC-25 (ENUM), DEC-26 (DOMAIN cuit), DEC-27, DEC-28, DEC-29, DEC-30, DEC-31, DEC-21 (4.ª UNIQUE), DEC-33 | Los tipos propios y dominios son el contenido de A-13 y dependen de estas decisiones |
 | **5. Resolubles en etapas posteriores** | DEC-19 (puede cerrarse en etapa 2 con el trigger RN-09), DEC-34…DEC-37, DEC-41, DEC-42, DEC-47 (parte), DEC-20 (post-aprobación), DEC-22 (administrativa), DEC-51/52 (notaciones documentales) | No bloquen el DDL; algunas pertenecen a etapa 2/3 por su naturaleza (triggers, carga, exportación) |
@@ -638,7 +638,7 @@ OBS-12→DEC-22 · OBS-13→DEC-23 · OBS-14→DEC-24.
 | DEC-08/09 | afectan FKs #22, #24 (transportista); DEC-26 (DOMAIN), DEC-33 (UNIQUE de cuit) |
 | DEC-10 (forma ID) | afecta la etapa 3 (carga) y todas las FKs con targets subrogados |
 | DEC-14 (NOT NULL) | Criterio conservador adoptado; afecta todo el diccionario y debe reflejarse en A-10 y `001_esquema.sql` |
-| DEC-17 (P-9) | entrada de DEC-32 (descuento) y del CHECK de rango de `descuento` |
+| DEC-17 (P-9) | pendiente únicamente por la regla especial del 35 % para exportadores con más de 3 permisos; DEC-32 ya adoptó e implementó el descuento base y el CHECK de rango de `descuento` |
 | DEC-23 (importes) | afecta DEC-31 (tipos monetarios) y triggers RN-08/RN-09 (etapa 2) |
 | DEC-24 (ON DELETE) | interdependiente con DEC-41/DEC-42/DEC-47 (mínimos y ciclo de estados) |
 | DEC-19 (stocks) | interdependiente con DEC-24 (FK #31) y con los triggers RN-09/RN-11 |
@@ -666,11 +666,12 @@ OBS-12→DEC-22 · OBS-13→DEC-23 · OBS-14→DEC-24.
 | D. Observaciones A-11 | 7 | DEC-18–DEC-24 |
 | E. Tipos y restricciones | 9 | DEC-25–DEC-33 |
 | F. Otras decisiones pendientes | 19 | DEC-34–DEC-52 |
-| **Total** | **52** | **RESUELTAS/ADOPTADAS: 17** — DEC-01…DEC-17. **PENDIENTES: 35** — DEC-18…DEC-52. |
+| **Total** | **52** | **RESUELTAS/ADOPTADAS: 18** — DEC-01…DEC-17 y DEC-32. **PENDIENTES: 34** — DEC-18…DEC-31 y DEC-33…DEC-52. |
 
 ---
 
 ### Registro de cambios de este documento
+- DEC-32 (Q-01) adoptada: se eligió la alternativa A (columna `Cliente.descuento` sincronizada mediante `fn_descuento_cliente`); implementación en `004_rn03_rn06.sql` y pruebas RN-06 aprobadas (18/18 pruebas de la suite general). P-9 permanece pendiente exclusivamente por el caso especial del 35 %.
 - Cierre: DEC-15/16/17 llevadas a RESUELTA (correcciones aplicadas en A-09, validación pendiente de Persona B); §0 actualizado (A-11 corregió la omisión de OBS-13); fila 1 de §8.1 depurada; título de fila 3 de §8.1 corregido a «etapa 2» y la nota «¿catalog extra tables?» reinterpretada sobre DEC-38.
 
 - Creación (A-12-matriz): relevo de 52 decisiones pendientes (grupos A-F incluidos), con la verificación

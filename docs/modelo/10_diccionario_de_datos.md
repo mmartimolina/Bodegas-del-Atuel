@@ -1,4 +1,4 @@
-﻿# A-10 â€” Diccionario de datos (PRELIMINAR)
+# A-10 â€” Diccionario de datos (PRELIMINAR)
 
 > **Estado: PRELIMINAR.** El diccionario documenta el esquema relacional de A-09
 > (`09_esquema_relacional.md`), que estÃ¡ a su vez marcado PRELIMINAR y sujeto a la aprobaciÃ³n de
@@ -254,7 +254,7 @@ Clave de lectura de la columna «Nulabilidad»:
 | direccion | TEXT [I] | P | â€” | â€” | DirecciÃ³n del cliente (sec. 5; Q-10 campo Ãºnico vs desglosado). |
 | localidad | BIGINT [R: FK a `Localidad.id_localidad` (DEC-01)] | P (DEC-14: mínimo inferido; sin NOT NULL) | FK → `Localidad.id_localidad` (FK #3), RESTRICT/RESTRICT [P: confirmación] | — | Identificador de la localidad del cliente. |
 | fecha_alta | DATE [R: "fecha de alta"; tipo fecha] | P (obligatoriedad [R: «Siempre» A-02; NOT NULL **PENDIENTE**, cf. §9.3-contradicciÃ³n 1) | â€” | `CURRENT_DATE` [R: etapa 2 lista «fecha de alta actual» como DEFAULT] | Fecha de alta (sec. 5). |
-| descuento | NUMERIC(5,2) [I] | P | CHECK de rango [R: RN-06 exige «CHECK de rango»; valores 10/20/30 â€” PENDIENTE P-9 (U6: 35 %)] | â€” | Porcentaje de descuento del cliente segÃºn tipo (sec. 5; RN-06). Columna vs funciÃ³n: **PENDIENTE** Q-01 (¿atributo persistente o `fn_descuento_cliente`?). |
+| descuento | NUMERIC(5,2) [I] | P | CHECK `ck_cliente_descuento_rango` [R: RN-06; 0–100]; sincronización mediante triggers [I] | — | Porcentaje de descuento del cliente según tipo: 10 % Socio, 20 % Distribuidor, 30 % Exportador (RN-06). Columna persistente sincronizada con `fn_descuento_cliente` (DEC-32, ADOPTADA). Regla especial del 35 % para exportadores con más de 3 permisos: **PENDIENTE** P-9 (U6). |
 
 ### 2.15 `Socio` (subtipo)
 
@@ -561,7 +561,7 @@ Respeto del mínimo de etapa 2: la consigna exige 4 UNIQUE adicionales a las PK 
 | Permiso_Exportacion | `fecha_vencimiento > fecha_emision` | RN-07 (CHECK entre columnas) |
 | Composicion.porcentaje | suma de porcentajes = 100 por vino | RN-05 (restricciÃ³n agregada: constraint trigger diferido, etapa 2 â€” **no** es CHECK de fila) |
 | Empleado.salario | ¿`salario > 0`? | **PENDIENTE** Q-08 (RN-15 no menciona salario) |
-| Cliente.descuento | CHECK de rango | RN-06 («CHECK de rango»); valores exactos **PENDIENTE** P-9 |
+| Cliente.descuento | CHECK de rango | RN-06; `ck_cliente_descuento_rango` implementado (0–100). Valores base 10/20/30 definidos; solo permanece pendiente P-9 (U6: posible 35 % para exportadores con más de 3 permisos). |
 | Renglon_Comprobante.descuento | CHECK de rango | **PENDIENTE** Q-05 (¿% o importe?) |
 
 Advertencia de la consigna (etapa 2): no usar `CURRENT_DATE` ni funciones no determinÃ­sticas dentro
@@ -684,14 +684,13 @@ Renglon_Transferencia 3 · Stock_Sala 3 · Stock_Deposito 2 · Auditoria_Precio 
 
 4. **Discrepancia descuento (A-09 §12.7) [corregida en A-09].** El resumen de A-09 ya no usa
    "(distrib.?)" para el 35 %: se refiere a exportadores con más de 3 permisos según U6.
-   El diccionario documenta `descuento` con CHECK de rango [R] y valores 10/20/30, con U6
-   como PENDIENTE (P-9).
+   El diccionario documenta `descuento` con CHECK de rango [R] y valores 10/20/30, con U6 con la regla especial de U6 pendiente de confirmación docente (P-9).
 
 ### 9.4 Decisiones pendientes (heredadas de A-09 §12 y activas en A-10)
 
 Permanecen activas las decisiones no resueltas de A-09 §12: D-1/AMB-07 (revisión de Persona B),
-D-3/AMB-11, ComK-a/RI-a/RT-a/TK-a/PerK/VK-a, ParK-a, Q-01/P-9 (descuento), Q-03 (fecha de
-ingreso), Q-05 (dominio del descuento del renglón), Q-06/D-6 (análisis), Q-07 (usuario de
+D-3/AMB-11, ComK-a/RI-a/RT-a/TK-a/PerK/VK-a, ParK-a, P-9 (regla especial del 35 % de descuento),
+Q-03 (fecha de ingreso), Q-05 (dominio del descuento del renglón), Q-06/D-6 (análisis), Q-07 (usuario de
 auditoría), Q-08–Q-13 (dominios menores), P-6 (>0 vs >=0 en stocks/cantidades), P-8 (catálogo
 de volúmenes), materialización de subtotal/descuento/total (R-5), ON DELETE #4/#21/#22/#23/#31,
 ON UPDATE, cuarta UNIQUE del mínimo de etapa 2 y alcance del DOMAIN `cuit`.

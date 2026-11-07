@@ -128,8 +128,8 @@ aquí como **FKs** (nombre de columna + entidad objetivo).
 14. **Cliente**: `id_cliente` (PK subrogada; DEC-10), `nombre` (Q-04: persona/empresa), `tipo_doc` + `n_doc`
 
     (AK candidata [P]), `direccion` (Q-10), FK a *Localidad* (REL-03), `fecha_alta`
-    (la etapa 2 dice «fecha actual» al alta), `descuento` (Q-01: ¿columna persistente o función?),
-    P-9 (30% exportador según RN-06 / 35% exportadores con más de 3 permisos según U6: definición y materialización pendientes en Q-01/P-9, independientemente de AMB-07).
+    (la etapa 2 dice «fecha actual» al alta), `descuento` persistente, sincronizado mediante `fn_descuento_cliente` (DEC-32; RN-06),
+    P-9 (U6): pendiente únicamente la confirmación docente de la regla especial del 35 % para exportadores con más de 3 permisos. El descuento base de 10/20/30 % y su materialización fueron adoptados en DEC-32.
 
 15. **Socio**: `id_cliente` (PK/FK heredada de *Cliente*); sin atributos propios.
 
@@ -358,9 +358,7 @@ Estado fisico real (verificado contra el catalogo de PostgreSQL en bases de prue
 | RN-05 | Constraint trigger `trg_rn05_composicion_suma_100` DEFERRABLE INITIALLY DEFERRED sobre `Composicion` (funcion `fn_composicion_suma_100`; valida la suma por vino al COMMIT) | 003 | `db/tests/rn05_composicion_suma.ok.sql`, `rn05_vinos_independientes.ok.sql`, `rn05_suma_menor/mayor/delete_incompleto.fail.sql` |
 | RN-07 | FK `fk_permiso_exportador` (varios permisos por exportador, sin UNIQUE) + CHECK `ck_permiso_fechas_orden` entre columnas | 002 | `db/tests/rn07_permisos.ok.sql`, `rn07_permisos_rechazos.ok.sql` |
 
-RN-08 (subtotal/total calculados) permanece pendiente: la issue A24 depende de A22 (RN-06,
-funcion de descuento), que no esta implementada; no se introduce su mecanismo sin la decision
-de Q-01/Q-05 (dominio del descuento) ya reflejada en A-12.
+RN-08 (subtotal/total calculados) permanece pendiente de A-24 (#30). La función `fn_descuento_cliente` (RN-06, A-22/#26) ya está implementada y probada. Siguen pendientes la definición del descuento del renglón (Q-05) y la decisión de almacenamiento y cálculo de importes (R-5).
 
 ---
 
@@ -478,7 +476,7 @@ NINGUNA de éstas es "entidad independiente del negocio"; son tablas de asociaci
 
 La estrategia de transformación adoptada en A-06 es una jerarquía con un supertipo y tres subtipos, con **totalidad y disyunción**. Se trata de una decisión de diseño fundamentada, no de una regla expresamente establecida por la consigna.
 
-- **`Cliente`** (supertipo): PK `id_cliente` [R] (alternativa natural `(tipo_doc, n_doc)` [P, sin garantía textual: CliK-b]); atributos comunes: `nombre` (Q-04), `tipo_doc` + `n_doc`, `direccion` (Q-10), FK a *Localidad* (REL-03), `fecha_alta` ("fecha actual" al alta en etapa 2), `descuento` (Q-01 / P-9: ¿columna persistente o función?).
+- **`Cliente`** (supertipo): PK `id_cliente` [R] (alternativa natural `(tipo_doc, n_doc)` [P, sin garantía textual: CliK-b]); atributos comunes: `nombre` (Q-04), `tipo_doc` + `n_doc`, `direccion` (Q-10), FK a *Localidad* (REL-03), `fecha_alta` ("fecha actual" al alta en etapa 2), `descuento` persistente, sincronizado mediante `fn_descuento_cliente` (DEC-32; RN-06). U6 permanece pendiente por P-9.
 - **`Socio`**: PK/FK `id_cliente` → `Cliente`; sin atributos propios.
 - **`Distribuidor`**: PK/FK `id_cliente` → `Cliente`; `zona`, `n_habilitacion`.
 - **`Exportador`**: PK/FK `id_cliente` → `Cliente`; `pais`; FK con la tabla `Permiso_Exportacion` (columna `exportador`, FK 21).
@@ -541,9 +539,10 @@ La estrategia y sus fundamentos están documentados en A-06. No deben tratarse c
    ninguna decisión cerrada textualmente.
 6. **ParK-a** (¿se puede reutilizar n.º de parcela tras borrado?): NO cambia la estructura (la PK es
    `(finca, n_parcela)`; se asume n.º del objeto).
-7. **Q-01/P-9**: materialización del descuento de Cliente (¿columna física vs. función?,
-   30% exportador según RN-06, 35% para exportadores con más de 3 permisos según U6). La definición y materialización
-   del descuento permanecen pendientes, independientemente de la jerarquía adoptada en A-06.
+7. **P-9 (U6)**: confirmar con el docente si corresponde un 35% de descuento para exportadores
+   con más de 3 permisos. La alternativa de diseño para materializar el descuento fue adoptada
+   en DEC-32: columna `Cliente.descuento` sincronizada mediante `fn_descuento_cliente`,
+   con valores 10/20/30 según RN-06. Solo queda pendiente la regla especial del 35%.
 8. **Q-03**: semántica de `fecha` en Ingreso (¿estadiaje?, ¿fecha de la bodega de destino?).
 9. **Q-05**: dominio del `descuento` de `Renglon_Comprobante` (porcentaje del RN-06, o importe).
 10. **Q-06/D-6**: identidad del análisis (id [R]) y la AK extendida `(finca, n_parcela, campania, fecha)` [P: sin garantía; resolució.known? ]

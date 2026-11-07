@@ -1,4 +1,4 @@
-﻿# Ejecutor integral de pruebas de reglas de negocio.
+# Ejecutor integral de pruebas de reglas de negocio.
 # Bases de datos utilizadas exclusivamente para pruebas:
 # rn_tests_tmp
 #
@@ -16,7 +16,8 @@ $script:migrationRoot = Join-Path $script:projectRoot 'db\migrations'
 $migrations = @(
     '001_esquema.sql',
     '002_constraints.sql',
-    '003_rn05_composicion_deferred.sql'
+    '003_rn05_composicion_deferred.sql',
+    '004_rn03_rn06.sql'
 )
 
 $okFiles = Get-ChildItem $PSScriptRoot -Filter '*.ok.sql' |
@@ -96,10 +97,14 @@ function Invoke-PsqlExpectedFailure {
         throw "La prueba negativa no produjo el rechazo esperado: $File"
     }
 
-    if ([IO.Path]::GetFileName($File) -like 'rn05_*') {
-        if ($result.Output -notmatch 'RN-05') {
-            throw "La prueba falló, pero no por la regla RN-05 esperada: $File`n$($result.Output)"
-        }
+    $testName = [IO.Path]::GetFileName($File)
+
+    if ($testName -like 'rn05_*' -and $result.Output -notmatch 'RN-05') {
+        throw "La prueba no fallo por RN-05 como se esperaba: $File`n$($result.Output)"
+    }
+
+    if ($testName -like 'rn06_*' -and $result.Output -notmatch 'RN-06') {
+        throw "La prueba no fallo por RN-06 como se esperaba: $File`n$($result.Output)"
     }
 
     return $result.Output
@@ -156,7 +161,7 @@ if ($okFiles.Count -eq 0) {
     throw "No se encontraron pruebas positivas."
 }
 
-if ($migrations.Count -ne 3) {
+if ($migrations.Count -ne 4) {
     throw "La lista de migraciones no es la esperada."
 }
 
