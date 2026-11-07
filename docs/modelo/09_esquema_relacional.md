@@ -5,9 +5,9 @@
 > incluye SQL:** la etapa pide el diseño documental, no el DDL.
 >
 > Esqueleto de marcaje como en A-03/A-04: [R] = respaldado, [I] = inferido, [P] = pendiente/condicionado.
-> **Las PK adoptadas se reflejan como decisiones vigentes**; las condiciones de negocio todavía abiertas
-se mantienen identificadas como pendientes. Las FK se definen en función de las PK adoptadas, sin
-confundir las decisiones estructurales con las acciones referenciales aún pendientes.
+**Las PK adoptadas se reflejan como decisiones vigentes**; las condiciones de negocio todavía abiertas
+se mantienen identificadas como pendientes. Las FK se definen en función de las PK adoptadas; las
+acciones ON DELETE están adoptadas e implementadas (§7.1), y el criterio ON UPDATE se documenta en §7.2.
 >
 > Fuentes: A-08 (DER, páginas 00–06), A-01…A-07 completos, `docs/requisitos.md` (nota: el PDF original no
 > es legible en este entorno; todas las citas provienen de esa transcripción). **No se inventan** entidades,
@@ -32,8 +32,9 @@ confundir las decisiones estructurales con las acciones referenciales aún pendi
    resueltas en A-12 se reflejan en §2 y §4; las condiciones de negocio todavía abiertas se conservan
    como pendientes en §12, sin reabrir decisiones estructurales ya adoptadas.
 8. **No se agregan UNIQUE/NOT NULL** sin respaldo textual (§6).
-9. **Acciones referenciales (ON DELETE/ON UPDATE) propuestas caso por caso** (§7), con patrón, regla
-   de respaldo, efecto, consecuencia y necesidad de confirmación — nunca "automáticas".
+9. **Acciones referenciales** (§7): decisiones ON DELETE adoptadas caso por caso y verificadas en
+   el DDL (§7.1); criterio ON UPDATE sin CASCADE, documentado por separado y sujeto a revisión
+   en etapa 2 (§7.2).
 
 ---
 
@@ -362,7 +363,7 @@ RN-08 (subtotal/total calculados) permanece pendiente de A-24 (#30). La función
 
 ---
 
-## 7. Acciones referenciales propuestas (caso por caso, nunca automáticas)
+## 7. Acciones referenciales: ON DELETE adoptadas y criterio ON UPDATE
 
 ### 7.0 Etiquetas de patrón y argumentos asociados
 
@@ -444,10 +445,9 @@ Las acciones referenciales se adoptan considerando la integridad histórica, la 
 - Tabla `Parcela` con FK compuesta `finca` → `Finca` + `n_parcela` (clave parcial).
 - PK compuesta `(finca, n_parcela)` [R triple cita: 3.2 + etapa 2 + UNIQUE (parcela, campaña)].
 - Minimalidad: `n_parcela` solo no es clave (varias fincas numeran «1»); `finca` sola tampoco.
-- La FK identificadora (Parcela.finca, componente de PK) con **ON DELETE por decidir** (RESTRICT —
-  protege la finca; CASCADE — borra las parcelas, coherente con la dependencia estructural del débil,
-  aunque el negocio no explicita borrado de fincas): confirmación en §12. Consecuencias de cada
-  opción listadas en §7.1 #4.
+- La FK identificadora `Parcela.finca` (componente de la PK) utiliza **ON DELETE RESTRICT**,
+  según la decisión adoptada en §7.1 #4. Así se impide eliminar una finca mientras tenga
+  parcelas asociadas, evitando el borrado automático de la entidad débil.
 - La dependencia existencial del débil (consigna 3.2) se materializa con NOT NULL de la FK
   (columna componente de la PK).
 - Única otra tabla que la referencia: `Lote.(finca, n_parcela)` (FK compuesta, REL-06).
@@ -492,16 +492,15 @@ La estrategia y sus fundamentos están documentados en A-06. No deben tratarse c
 
 - Las PK/FK heredadas de los subtipos establecen su correspondencia con `Cliente`, pero por sí solas no garantizan la totalidad ni la disyunción de la jerarquía.
 - Será necesario evaluar mecanismos adicionales de integridad para garantizar ambas reglas en la etapa de implementación.
-- Las acciones referenciales `ON DELETE CASCADE` propuestas para las FK #18–20 permitirían eliminar la fila del subtipo cuando se elimina el `Cliente`. Se mantienen como propuestas sujetas a confirmación: la decisión de totalidad y disyunción no determina por sí sola la política de borrado.
-- La FK #21 (`Permiso_Exportacion.exportador → Exportador`) conserva su propia decisión pendiente entre `CASCADE` y `RESTRICT`, independiente de la resolución de AMB-07.
-
+- Las FK #18–20 utilizan `ON DELETE CASCADE`, según las decisiones adoptadas en §7.1. Al eliminar un `Cliente`, se elimina también la fila de su subtipo correspondiente.
+- La FK #21 (`Permiso_Exportacion.exportador → Exportador`) utiliza `ON DELETE RESTRICT`, preservando los permisos de exportación e impidiendo eliminar un exportador que tenga permisos asociados.
 ---
 
 ## 11. Inventario: Stock de sala y Stock de depósito (docs A-04, página 06)
 
 - **`Stock_Sala`**: tabla por par `(sala, vino)` (PK textual de la sección 5) con `cantidad`
-  (RN-09 >= 0, con P-6 abierto). FK a *Sala* (RESTRICT/pendiente confirmación) y a *Vino*
-  (RESTRICT). Sin atributos adicionales (Q-13: no respaldado). Nota de interpretación: la ausencia
+  (RN-09 >= 0, con P-6 abierto). FK a *Sala* y a *Vino*, ambas con `ON DELETE RESTRICT`
+  según §7.1 #31–32. Sin atributos adicionales (Q-13: no respaldado). Nota de interpretación: la ausencia
   de fila NO es lo mismo que cantidad 0; y el valor 0 ≠ ausencia (P-6/AMB-11: revisar con docente).
 - **`Stock_Deposito`**: tabla con PK/FK `vino` adoptada (REL-24; A-12) + `cantidad`
   (RN-09 con P-6 abierto). D-3 mantiene pendiente la decisión de negocio sobre si el stock de
@@ -553,8 +552,8 @@ La estrategia y sus fundamentos están documentados en A-06. No deben tratarse c
 15. **Almacenamiento de subtotal/descuento/total** (R-5; RN-08): guardados vs. calculados — decisión
     con justificación por escrito exigida por la sección 5; en esta propuesta los atributos están
     presentes por A-02, el criterio físico queda abierto.
-16. **ON DELETE decidibles pendientes en FK #4, #21, #22, #23 y #31** (alternativas RESTRICT/CASCADE
-    detalladas en §7.1); ninguna exigida por regla textual (confirmación con equipo/docente).
+16. **ON DELETE: decisiones adoptadas y aplicadas en el DDL.** Las 8 FK indicadas en §7.1
+    usan CASCADE y las 26 restantes RESTRICT; la verificación de catálogo confirma las 34 acciones.
 17. **ON UPDATE**: sin CASCADE (no hay regla que pida cambiar identificadores); confirmación en etapa 2.
 
 ---
@@ -604,7 +603,7 @@ La estrategia y sus fundamentos están documentados en A-06. No deben tratarse c
 | No se pierden atributos de asociaciones o entidades | OK — §9 lista los atributos propios de cada asociación. |
 | No se incorporan dependencias funcionales o restricciones sin justificación | OK — §6.2 identifica las UNIQUE no garantizadas y §7 documenta las confirmaciones pendientes. |
 | Las claves primarias adoptadas están reflejadas en el esquema | OK — §2, §4 y §13 reflejan las decisiones vigentes de A-12; las condiciones de negocio aún abiertas se mantienen en §12. |
-| Las claves foráneas referencian las PK correspondientes | OK — §5.1 documenta los destinos de las FKs; las acciones referenciales pendientes se conservan separadamente. |
+| Las claves foráneas referencian las PK correspondientes | OK — §5.1 documenta los destinos de las FKs; las acciones ON DELETE adoptadas y verificadas se detallan en §7.1, y el criterio ON UPDATE en §7.2. |
 | Las decisiones pendientes de A-01…A-07 se mantienen identificadas sin abrir temas nuevos | OK — §12 conserva las cuestiones pendientes de diseño. |
 
 (Ningún punto quedó fuera del trazado; el modelo relacional resultante es coherente con el DER
@@ -616,12 +615,13 @@ revisado en A-08 y hereda sus ambigüedades abiertas.)
 
 1. **Toda la propuesta es preliminar** y depende de la revisión/aprobación de A-08; si A-08 cambia,
    el esquema deberá re-validarse (cambios en entidad/jerarquía/relaciones se propagarian).
-2. No hay SQL DDL ni tipos de datos SQL: corresponden a la **etapa 2** (CHECKs, triggers y
-   definiciones físicas); las acciones referenciales de §7 son propuestas, no definiciones.
+2. El DDL y los tipos de datos SQL se encuentran implementados en las migraciones de
+   `db/migrations/`; las acciones ON DELETE se documentan en §7.1 y están adoptadas e
+   implementadas en la migración 001. El criterio ON UPDATE se documenta en §7.2.
 3. Las PK adoptadas en A-12 se reflejan en este esquema y no se consideran pendientes de aprobación
-   nuevamente. Las restricciones UNIQUE y NOT NULL que carecen de respaldo suficiente, las
-   condiciones de negocio abiertas y las acciones ON DELETE pendientes se conservan identificadas
-   en las secciones correspondientes, sujetas a revisión del equipo/docente.
+   nuevamente. Las restricciones UNIQUE y NOT NULL que carecen de respaldo suficiente y las
+   condiciones de negocio abiertas se conservan identificadas en las secciones correspondientes,
+   sujetas a revisión del equipo/docente.
 4. El PDF original no es legible en este entorno: todo respaldo textual viene de `docs/requisitos.md`
    y de los documentos A-01…A-07 y A-08, que han registrado esta misma limitación.
 
@@ -629,17 +629,14 @@ revisado en A-08 y hereda sus ambigüedades abiertas.)
 
 ### Registro de cambios de este documento
 
-- Creación (A-09, preliminar): 29 tablas (16 fuertes + 1 débil + 6 asociativas + 2 stock + 3 subtipos +
+- Creación (A-09): 29 tablas (16 fuertes + 1 débil + 6 asociativas + 2 stock + 3 subtipos +
   1 auditoría); atributos por tabla (A-02); PK compuestas con minimalidad de cada una (§4); PK de
   `Lote` resuelta (DEC-02: `(finca, n_parcela, campania)`; FK #8 de `Analisis` convertida en compuesta);
-  34 FKs
-  (§5) con acciones referenciales caso por caso (§7); transformación de la entidad débil Parcela (§8);
-  jerarquía A-06 con Cliente total y disjunta (§10); stocks/inventarios (§11); matriz de
-  trazabilidad DER↔esquema (§13); auditoría cruzada (§14); PK adoptadas según A-12; sin SQL y
-  con condiciones de negocio y acciones referenciales pendientes identificadas; se requiere
-  aprobación de A-08.
+  34 FKs (§5) con acciones referenciales adoptadas e implementadas (§7); transformación de la entidad
+  débil Parcela (§8); jerarquía A-06 con Cliente total y disjunta (§10); stocks/inventarios (§11);
+  matriz de trazabilidad DER↔esquema (§13); auditoría cruzada (§14); PK adoptadas según A-12.
 
-- Implementacion etapa 2 (A-17/A-18/A-20/A-21/A-23): contexto y estado fisico en la nueva s 6.5;
-  mecanismos verificados en bases de prueba con 13 casos (OK y rechazos esperados) via
-  db/tests/run_tests.ps1 (migraciones 001, 002 y 003). Ningun cambio de esquema ni de
-  acciones referenciales: las decisiones de s 7.1 siguen vigentes y coinciden con el DDL.
+- Implementación de etapa 2 (A-17/A-18/A-20/A-21/A-23): contexto y estado físico en §6.5;
+  mecanismos verificados en bases de prueba con 13 casos (OK y rechazos esperados) mediante
+  `db/tests/run_tests.ps1` (migraciones 001, 002 y 003). Las decisiones de §7.1 se mantienen
+  vigentes y coinciden con las acciones referenciales implementadas en el DDL.

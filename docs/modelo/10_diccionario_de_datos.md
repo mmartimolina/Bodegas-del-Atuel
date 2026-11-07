@@ -666,13 +666,12 @@ Renglon_Transferencia 3 · Stock_Sala 3 · Stock_Deposito 2 · Auditoria_Precio 
 
 ### 9.3 Contradicciones/inconsistencias detectadas (A-09 vs documentos anteriores)
 
-1. **Obligatoriedad conceptual vs NOT NULL [criterio adoptado; implementación pendiente].** A-02
-   utiliza la expresión «Siempre» para numerosos atributos descriptivos. A-09 §6.3 establece
+1. **Obligatoriedad conceptual vs NOT NULL [criterio adoptado y aplicado].**
+   A-02 utiliza la expresión «Siempre» para numerosos atributos descriptivos. A-09 §6.3 establece
    un criterio conservador para trasladar obligatoriedad al modelo físico. DEC-14 adoptó ese
    criterio: `NOT NULL` para componentes de PK y FK con participación mínima 1 respaldada
    textualmente. No se deriva `NOT NULL` para atributos descriptivos ni para FK cuyo mínimo
-   sea inferido únicamente a partir de A-02. La decisión conceptual está resuelta; resta
-   alinear las definiciones del diccionario y el DDL con DEC-14.
+   sea inferido únicamente a partir de A-02. La decisión conceptual está resuelta y adoptada. El DDL aplica el criterio conservador de DEC-14; las marcas [R]/[I]/[P] del diccionario conservan la distinción entre obligatoriedad respaldada, inferida y pendiente, sin convertir automáticamente las últimas en NOT NULL.
 
 2. **Aritmética del encabezado de A-09 §2 [corregida].** El texto decía "17 de entidades fuertes
    + 1 débil + 6 asociativas + 2 stock + 3 subtipos + 1 técnica" (suma 30). La cuenta correcta es
@@ -724,5 +723,4 @@ sigue pendiente por las decisiones de negocio, restricciones y tipos todavía no
 
 - Implementacion etapa 2 (A-17/A-18/A-20/A-21/A-23): se agrego la seccion s 5 bis con los
   mecanismos fisicos vigentes (CHECK, FK, constraint trigger diferido RN-05 en migracion 003,
-  pruebas en db/tests). El conteo 128 columnas y las marcas [R]/[I]/[P] no cambian; DEC-14
-  sigue como esta: los mecanismos implementados usan solo las NOT NULL/textuales ya documentadas.
+  pruebas en db/tests).el conteo de 128 columnas y las marcas [R]/[I]/[P] se mantienen. DEC-14 está adoptada y aplicada en el DDL: las restricciones NOT NULL corresponden a componentes de PK y FK con participación mínima 1 respaldada textualmente, además de los casos expresamente exigidos por reglas de negocio implementadas.

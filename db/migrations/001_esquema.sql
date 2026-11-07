@@ -14,8 +14,8 @@
 --   DEC-01/03..09: PK adoptadas (naturales y subrogadas). DEC-02: PK de Lote compuesta
 --     (finca, n_parcela, campania); FK #8 de Analisis compuesta. DEC-10:
 --     subrogadas = BIGINT GENERATED ALWAYS AS IDENTITY.
---   DEC-14 (NOT NULL): solo componentes de PK y FK marcadas NOT NULL en el diccionario A-10
---     (respaldadas [R] o inferidas [I], segun lo documentado en A-10 ya que DEC-14 sigue abierta).
+--   DEC-14 (NOT NULL): criterio conservador adoptado; componentes de PK y FK
+--     con participacion minima 1 respaldada textualmente, mas casos exigidos por reglas de negocio.
 --   UNIQUE: ninguna adicional mas alla de las implicitas en las PK; las textuales de etapa 2
 --     (Bodega.cuit, Vino triada, etc.) corresponden a A-16.
 --   A-16 (pendiente): UNIQUE adicionales, CHECKs, triggers, roles, funciones, procedimientos.

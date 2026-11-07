@@ -224,7 +224,7 @@ BEGIN
 END $$;
 
 -- 6. NOT NULL: obligatoriedad fisica segun A-09 y criterio conservador
--- propuesto para DEC-14, aun pendiente de ratificacion.
+-- adoptado en DEC-14 y aplicado en el DDL.
 DO $$
 DECLARE
     n int;
@@ -242,8 +242,7 @@ BEGIN
         (table_name = 'Comprobante' AND column_name IN ('cliente','sala')) OR
         (table_name = 'Ingreso' AND column_name IN ('transportista','bodega_origen','estado')) OR
         (table_name = 'Transferencia' AND column_name IN ('sala','estado','fecha_confeccion')) OR
-        (table_name = 'Composicion' AND column_name = 'porcentaje') OR
-        (table_name = 'Auditoria_Precio' AND column_name IN ('vino','precio_anterior','precio_nuevo','fecha_hora','usuario')) OR
+        (table_name = 'Auditoria_Precio' AND column_name IN ('vino','precio_anterior','precio_nuevo','fecha_hora')) OR
         (column_name = 'cantidad' AND table_name IN ('Renglon_Comprobante','Renglon_Ingreso','Renglon_Transferencia','Stock_Sala','Stock_Deposito')) OR
         (column_name = 'precio_unitario' AND table_name = 'Renglon_Comprobante')
       );
@@ -297,21 +296,18 @@ DO $$
 DECLARE
     n int;
 BEGIN
-    -- 5 FK con NO ACTION y 6 FK con CASCADE.
+    -- 8 FK con CASCADE; las 26 restantes usan RESTRICT.
     SELECT count(*) INTO n
     FROM (
         VALUES
-            ('fk_parcela_finca', 'a'),
-            ('fk_permiso_exportador', 'a'),
-            ('fk_transportista_localidad_transportista', 'a'),
-            ('fk_transportista_localidad_localidad', 'a'),
-            ('fk_stock_sala_sala', 'a'),
             ('fk_renglon_comprobante_comprobante', 'c'),
-            ('fk_renglon_ingreso_ingreso', 'c'),
-            ('fk_renglon_transferencia_transferencia', 'c'),
             ('fk_socio_cliente', 'c'),
             ('fk_distribuidor_cliente', 'c'),
-            ('fk_exportador_cliente', 'c')
+            ('fk_exportador_cliente', 'c'),
+            ('fk_transportista_localidad_transportista', 'c'),
+            ('fk_transportista_localidad_localidad', 'c'),
+            ('fk_renglon_ingreso_ingreso', 'c'),
+            ('fk_renglon_transferencia_transferencia', 'c')
     ) AS esperado(constraint_name, delete_action)
     LEFT JOIN pg_constraint c
       ON c.conname = esperado.constraint_name
