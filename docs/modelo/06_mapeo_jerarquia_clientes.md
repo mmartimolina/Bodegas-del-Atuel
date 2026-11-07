@@ -1,4 +1,4 @@
-# A-06 — Evaluación del mapeo de la jerarquía de clientes
+﻿# A-06 — Evaluación del mapeo de la jerarquía de clientes
 
 ## 1. Objetivo y alcance
 
@@ -6,7 +6,7 @@ Evaluar las tres estrategias de mapeo de la jerarquía Cliente–Socio–Distrib
 
 Este análisis utiliza como antecedentes A-01 (entidades candidatas), A-02 (atributos) y A-04 (relaciones y cardinalidades).
 
-La elección de una estrategia de mapeo no resuelve por sí misma la totalidad ni la exclusividad de la jerarquía. Esas cuestiones permanecen abiertas en AMB-07 de A-04.
+La estrategia de mapeo y las características de totalidad y exclusividad de la jerarquía fueron resueltas mediante decisiones de diseño documentadas en este análisis y en A-04. Se adopta una jerarquía total y disjunta: todo Cliente pertenece exactamente a uno de los subtipos Socio, Distribuidor o Exportador. Esta interpretación es una decisión de diseño fundamentada en las categorías y descuentos diferenciados de RN-06, no un requisito textual explícito.
 
 ## 2. Distribución de atributos
 
@@ -46,7 +46,7 @@ Se utiliza una sola tabla `Cliente`, con un atributo que identifica el tipo de c
 **Desventajas:**
 - Los atributos específicos de cada subtipo pueden quedar en NULL para los demás tipos.
 - Se necesitan restricciones condicionales para validar qué atributos corresponden a cada tipo.
-- La estructura presupone una única clasificación por cliente si se utiliza un discriminador simple; esto no debe adoptarse sin resolver la exclusividad de la jerarquía.
+- La estructura con discriminador simple representa una única clasificación por cliente, por lo que resulta compatible con una jerarquía disjunta como la adoptada. No permitiría representar solapamientos entre subtipos.
 
 ### 3.2. Una tabla independiente por subtipo
 
@@ -77,8 +77,8 @@ Se crea una tabla `Cliente` con los atributos comunes y una tabla para cada subt
 
 **Desventajas:**
 - Las consultas que requieren datos comunes y específicos necesitan JOIN.
-- Las claves foráneas garantizan que cada subtipo corresponda a un cliente existente, pero por sí solas no garantizan exclusividad ni totalidad.
-- Si se establecieran reglas de exclusividad o pertenencia obligatoria, sería necesario implementar mecanismos adicionales de integridad.
+- Las claves foráneas garantizan que cada subtipo corresponda a un cliente existente, pero por sí solas no garantizan exclusividad ni totalidad. Como se adoptó una jerarquía total y disjunta, estas reglas deberán reforzarse mediante mecanismos adicionales de integridad.
+- La implementación de las reglas de exclusividad y pertenencia obligatoria requerirá mecanismos adicionales de integridad, dado que las claves foráneas por sí solas no garantizan esas condiciones.
 
 ## 4. Comparación
 
@@ -92,9 +92,9 @@ Se crea una tabla `Cliente` con los atributos comunes y una tabla para cada subt
 | Consultas específicas | Filtro por tipo | Directas | JOIN |
 | Integridad de la jerarquía | Restricciones condicionales | Datos comunes repetidos | PK/FK y restricciones adicionales según reglas |
 
-## 5. Decisión propuesta
+## 5. Decisión adoptada
 
-Se propone adoptar la estrategia de **supertipo Cliente más una tabla por cada subtipo: Socio, Distribuidor y Exportador**.
+Se adopta la estrategia de **supertipo Cliente más una tabla por cada subtipo: Socio, Distribuidor y Exportador**.
 
 La elección se fundamenta en que la jerarquía presenta varios atributos comunes y pocos atributos específicos. Mantener los datos compartidos en una única tabla evita su repetición y facilita las consultas generales sobre los 20.000 clientes previstos.
 
@@ -102,21 +102,24 @@ A su vez, separar los atributos específicos permite representar los datos propi
 
 La estrategia ofrece un equilibrio entre reducción de redundancia, claridad conceptual e integridad referencial. Si bien algunas consultas específicas requieren JOIN, este costo se considera razonable frente a las ventajas de mantener los datos comunes centralizados.
 
+**Totalidad y exclusividad de la jerarquía:** se adopta una jerarquía total y disjunta. Todo Cliente debe pertenecer exactamente a uno de los tres subtipos: Socio, Distribuidor o Exportador. Esta condición permite garantizar una única clasificación y un único descuento aplicable por cliente, de acuerdo con RN-06. Se trata de una decisión de diseño justificada, no de un requisito textual explícito de la consigna.
+
 ## 6. Cuestiones que permanecen abiertas
 
-La decisión de mapeo no resuelve las siguientes cuestiones:
+La decisión de mapeo y la clasificación total y disjunta de la jerarquía ya fueron adoptadas. Permanecen abiertas únicamente las siguientes cuestiones:
 
-- **AMB-07 (A-04):** no está determinado si la jerarquía es total o parcial, ni si los subtipos son excluyentes o pueden solaparse.
 - **Q-01 (A-02):** permanece pendiente decidir la materialización del descuento habitual del cliente.
 - **P-9:** permanece pendiente la interpretación de la diferencia entre RN-06 y U6.
 - **Q-04 (A-02):** permanece pendiente decidir si el nombre se mantiene como un único atributo o se descompone según el tipo de persona.
 
 Estas cuestiones deberán resolverse en las etapas correspondientes y no se consideran supuestos de esta decisión.
 
-## 7. Estado de revisión
+## 7. Estado de la decisión
 
-**Decisión propuesta:** supertipo más tablas de subtipos.
+**Decisión adoptada:** supertipo Cliente más tablas de subtipos Socio, Distribuidor y Exportador.
 
-**Revisión de Persona B:** pendiente.
+**Responsable de la decisión:** responsable del diseño del modelo de datos.
 
-La decisión deberá ser revisada por el segundo integrante antes de considerar cumplido el criterio de aceptación correspondiente a A-06.
+**Estado de revisión:** la decisión fue adoptada y documentada. La revisión de Persona B podrá aportar observaciones posteriores, pero no constituye un bloqueo para continuar con el diseño.
+
+La decisión se considera documentada para el criterio de aceptación de A-06.

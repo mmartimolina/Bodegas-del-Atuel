@@ -1,3 +1,4 @@
+
 # A-04 — Relaciones y cardinalidades
 
 > Issue A-04 · Responsable: Persona A · Estado: borrador conceptual revisado (pre-DER)
@@ -263,8 +264,7 @@ ambos extremos, aunque la consigna solo diga «N:M».
   existencia de **socios** sin compras; no fijan el mínimo 0 para todos los clientes ni el máximo N. Ambos
   extremos del lado Cliente se mantienen como inferidos.
 - **Aclaración:** no hay una relación directa Cliente–Sala; el vínculo se produce a través del comprobante.
-  La jerarquía de Cliente sigue pendiente. Ver REL-15, AMB-04b y AMB-07.
-
+La jerarquía de Cliente se resolvió mediante una decisión de diseño total y disjunta. Ver REL-15, AMB-07 y D-1. La forma de representar el nombre permanece pendiente en Q-04.
 #### REL-13 — Sala de venta–Comprobante
 
 - **Participantes:** Sala de venta (A) y Comprobante (B).
@@ -296,17 +296,12 @@ ambos extremos, aunque la consigna solo diga «N:M».
 #### REL-15 — Cliente–Socio / Distribuidor / Exportador
 
 - **Participantes:** Cliente (A) como supertipo y Socio, Distribuidor y Exportador (B) como subtipos.
-- **Cardinalidad:** A **no determinada**; B `1*..1*` cliente, como supuesto de trabajo.
+- **Cardinalidad:** A `1..1` subtipo; B `1..1` Cliente. Cada Cliente pertenece exactamente a uno de los tres subtipos y cada registro de subtipo corresponde a exactamente un Cliente.
 - **Clasificación:** J.
 - **Respaldo:** «Existen tres tipos de cliente: • Socios del club… • Distribuidores… • Exportadores…»
-  (p. 5, §3.4). La sección 5 indica «Supertipo de una jerarquía con 3 subtipos» y exige «Decidir y
-  justificar la estrategia de mapeo» (p. 7, §5).
-- **Justificación:** B→A: cada fila de subtipo representa un cliente; se toma como supuesto de herencia,
-  no como decisión cerrada. A→B: no se puede fijar cardinalidad sin saber si la jerarquía es total o
-  parcial y si es disjunta o solapada. Las alternativas son `1..1`, `1..N`, `0..1` o `0..N`.
-- **Aclaración:** el supuesto de trabajo cubre ambos extremos (`1*..1*`) y no decide totalidad, exclusividad
-  ni mapeo. Un cliente podría, en principio, no tener subtipo, tener exactamente uno o tener más de uno; el
-  texto no lo aclara. Ver AMB-07, D-1 y Q-04.
+  (p. 5, §3.4). La sección 5 indica «Supertipo de una jerarquía con 3 subtipos» y exige «Decidir y justificar la estrategia de mapeo» (p. 7, §5).
+- **Justificación:** se adopta una jerarquía total y disjunta por decisión de diseño. La consigna identifica tres categorías de clientes y asigna un descuento diferente a cada una (RN-06), pero no establece expresamente que todos los clientes deban pertenecer a un subtipo ni que las categorías sean excluyentes. Se elige esta interpretación para garantizar una única clasificación y un único descuento aplicable por cliente. El mapeo físico elegido es un supertipo Cliente más las tablas Socio, Distribuidor y Exportador.
+- **Aclaración:** la totalidad y la exclusividad son decisiones de diseño justificadas, no requisitos textuales explícitos. La decisión de mapeo y sus fundamentos se documentan en A-06; ver también AMB-07 y D-1. Q-04 permanece pendiente únicamente respecto de la forma de representar el nombre del Cliente.
 
 #### REL-16 — Exportador–Permiso de exportación
 
@@ -465,7 +460,7 @@ ambos extremos, aunque la consigna solo diga «N:M».
 | AMB-04b | ¿El Cliente debe comprar en una Sala de su Localidad? | REL-01, REL-03, REL-12, REL-13 | No hay regla que relacione la localidad del cliente con la localidad de la sala; el vínculo Cliente–Sala es indirecto a través de Comprobante. Si se exigiera, afectaría estas relaciones. Pendiente. |
 | AMB-05 | ¿Una Bodega puede existir sin Vinos? | REL-09 | «Una bodega elabora varios vinos» sugiere mínimo 2, pero no es una regla formal. I4 permite insertar una bodega antes de cargar vinos; eso no demuestra que una bodega vacía sea un estado final válido. Alternativas `2*..N`, `1..N` o `0..N`; `2*..N` no se adopta como definitiva para el DER. Pendiente. |
 | AMB-06 | ¿La bodega destino del Lote, la elaboradora del Vino y la origen del Ingreso son la misma? | REL-07, REL-09, REL-18 | El texto usa «bodega» en tres roles; no impone igualdad. Se modelan como tres vínculos separados. Pendiente; no se infiere identidad. |
-| AMB-07 | Jerarquía Cliente: ¿es total y disjunta? | REL-15 | No se declara si todo cliente tiene subtipo, ni si los subtipos son excluyentes. Alternativas: `1..1`, `1..N`, `0..1` o `0..N` desde Cliente. El lado Subtipo→Cliente se toma como `1*..1*` solo como supuesto de trabajo: ambos extremos son inferidos, no confirmados. Ver D-1 y Q-04. Pendiente. |
+| AMB-07 | Jerarquía Cliente: ¿es total y disjunta? | REL-15 | **Resuelta por decisión de diseño:** se adopta una jerarquía total y disjunta. Todo Cliente pertenece exactamente a uno de los tres subtipos (Socio, Distribuidor o Exportador). La consigna identifica esas tres categorías y asigna un descuento diferente a cada una (RN-06), pero no declara expresamente totalidad ni exclusividad. Se adopta esta interpretación para que todo cliente tenga una única clasificación y un único descuento aplicable. Es una decisión de diseño, no una restricción textual explícita. El mapeo físico elegido es supertipo Cliente más tablas de subtipos; ver A-06. |
 | AMB-08 | ¿Todo Exportador tiene al menos un Permiso? ¿Un Permiso puede pertenecer a varios exportadores? | REL-16 | «Puede tener varios» permite cero; no se declara un mínimo. El texto presenta los permisos como del exportador, pero no discute compartición. Se propone `0..N` y `1*..1`; pendiente de confirmación. |
 | AMB-09 | ¿Todo Transportista cubre al menos una Localidad? ¿Toda Localidad está cubierta? | REL-17 | El texto solo exige conocer «a qué localidades alcanza»; no fija mínimos. Se propone `0*..N` en ambos extremos. Pendiente. |
 | AMB-10a | ¿Un Comprobante puede existir sin renglones? | REL-14 | «Contiene un conjunto de vinos» sugiere al menos uno, pero no hay una regla formal. RN-12 no regula Comprobante. La posibilidad de un comprobante vacío queda abierta; el mínimo de negocio se propone `1*..N*`. Pendiente. |
@@ -489,7 +484,7 @@ ambos extremos, aunque la consigna solo diga «N:M».
 
 | Duda | Tema | Relaciones o ambigüedades afectadas | Tratamiento en A-04 |
 |---|---|---|---|
-| D-1 | Mapeo de la jerarquía Cliente | REL-15, AMB-07 | No se decide; la cardinalidad Cliente→subtipo queda no determinada. |
+| D-1 | Mapeo de la jerarquía Cliente | REL-15, AMB-07 | Resuelta: supertipo Cliente más tablas Socio, Distribuidor y Exportador. La jerarquía se adopta total y disjunta por decisión de diseño; ver A-06 y AMB-07. |
 | D-2 | Renglones y stocks: débil vs. asociativa | REL-14, REL-20, REL-22, REL-23; AMB-10a, AMB-10b, AMB-11 | REL-14, REL-20, REL-22 y REL-23 se describen como N:M; no se decide su materialización. |
 | D-3 | Separación del stock de depósito | REL-23, REL-24; AMB-11 | Se mantiene la separación conceptual; REL-24 es 1:1 opcional; no se decide si existe una fila universal. |
 | D-4 | Encargado regional | Sin relación propia | Es atributo de Localidad en A-01/A-02; no genera una relación en A-04. |
@@ -502,7 +497,7 @@ ambos extremos, aunque la consigna solo diga «N:M».
 | Q-01 | Descuento: atributo vs. función | REL-12, REL-14 | No cambia cardinalidades; es un atributo/derivado del cliente o del renglón. |
 | Q-02 | Identidad del Lote | REL-06, REL-07, REL-08 | No cambia las cardinalidades; la identidad y numeración siguen abiertas. |
 | Q-03 | Fecha del Ingreso | REL-18, REL-19, REL-20; AMB-14 | No cambia las cardinalidades; la semántica temporal sigue abierta. |
-| Q-04 | Nombre del Cliente y jerarquía | REL-15, AMB-07 | No se decide la forma del nombre ni el mapeo. |
+| Q-04 | Nombre del Cliente | REL-15 | Permanece pendiente decidir cómo representar el nombre del Cliente. El mapeo de la jerarquía ya fue resuelto mediante supertipo Cliente y tablas Socio, Distribuidor y Exportador; ver D-1 y AMB-07. |
 | Q-05 | Descuento del renglón: porcentaje o importe | REL-14 | No cambia la relación ni sus extremos. |
 | Q-06 | Identidad del Análisis | REL-08, AMB-13 | No se resuelve; la relación se mantiene. |
 | Q-07 | Usuario de la auditoría | REL-25 | No cambia la cardinalidad; el origen del usuario sigue abierto. |
@@ -584,11 +579,11 @@ quedan fuera hasta que exista una decisión o una consulta al docente.
 
 ### 7.4 Cuestiones pendientes
 
-- Las **18 ambigüedades abiertas**: AMB-01, AMB-02, AMB-03, AMB-04a, AMB-04b, AMB-05, AMB-06, AMB-07,
+- Las **17 ambigüedades abiertas**: AMB-01, AMB-02, AMB-03, AMB-04a, AMB-04b, AMB-05, AMB-06,
   AMB-08, AMB-09, AMB-10a, AMB-10b, AMB-11, AMB-12, AMB-13, AMB-14, AMB-16 y AMB-17.
 - **AMB-15 está resuelta** por A-02 R-11: cobertura del transportista y zona del distribuidor son
   conceptos distintos.
-- Totalidad y exclusividad de la jerarquía Cliente (D-1, Q-04).
+- Forma de representar el nombre del Cliente (Q-04); la totalidad, exclusividad y estrategia de mapeo de la jerarquía ya fueron resueltas.
 - Si una bodega, sala, finca o localidad puede existir sin sus entidades relacionadas (AMB-01, AMB-03,
   AMB-04a, AMB-05, AMB-17).
 - Si el cliente debe comprar en una sala de su propia localidad (AMB-04b).

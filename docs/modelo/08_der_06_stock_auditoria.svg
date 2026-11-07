@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="930" height="825" viewBox="0 0 930 825" font-family="Helvetica,Arial,sans-serif">
+<rect width="930" height="825" fill="#ffffff"/>
+<text x="30" y="34" font-size="17" font-weight="bold">A-08 · DER (6/6) — Depósito, stock y auditoría de precios</text>
+<text x="30" y="56" font-size="9.5" fill="#333333">Notación: K = clave candidata respaldada [R] · I = inferida · P = pendiente de validación · AK = alterna · K/FK = componente de clave y foránea · FK → subrogada de cabecera/roja (débil: clave propietaria + parcial). Colores: azul = fuerte · verde (borde discontinuo) = débil · naranja = asociativa · amarillo = inventario · violeta = supertipo · violeta claro = subtipo. Cardinalidad &quot;A x..y — z..w B&quot; por extremo (A-04); * = extremo inferido. Cajas grises = referencia repetida de otra página.</text>
+<text x="30" y="70" font-size="9.5" fill="#333333">Cardinalidades: rangos independientes por extremo (A-04: A x..y — z..w B); * junto al extremo inferido/condicionado; mínimo 0 = participación parcial.</text>
+<path d="M 240.0,156.0 L 280.0,156.0 L 280.0,133.5 L 320.0,133.5" fill="none" stroke="#444444" stroke-width="1.3"/>
+<rect x="170.7" y="117.5" width="218.7" height="32.0" fill="#ffffff" stroke="#bbbbbb" stroke-width="0.7"/>
+<text x="176.7" y="129.5" font-size="9.5" fill="#1a1a1a">REL-24 Vino 0*..1 — Stock deposits 1..1</text>
+<text x="176.7" y="142.5" font-size="9.5" fill="#1a1a1a">(fila ausente ≠ cantidad 0) [P]</text>
+<path d="M 140.0,222.0 L 140.0,330.0 L 320.0,330.0" fill="none" stroke="#444444" stroke-width="1.3"/>
+<rect x="33.3" y="320.5" width="213.4" height="19.0" fill="#ffffff" stroke="#bbbbbb" stroke-width="0.7"/>
+<text x="39.3" y="332.5" font-size="9.5" fill="#1a1a1a">REL-25 Vino 0*..N — Auditoría 1..1 [P]</text>
+<path d="M 240.0,486.0 L 140.0,486.0 L 140.0,657.5 L 40.0,657.5" fill="none" stroke="#444444" stroke-width="1.3"/>
+<rect x="62.5" y="648.0" width="155.1" height="19.0" fill="#ffffff" stroke="#bbbbbb" stroke-width="0.7"/>
+<text x="68.5" y="660.0" font-size="9.5" fill="#1a1a1a">REL-23 Sala 0*..N vinos [P]</text>
+<path d="M 240.0,657.5 L 140.0,657.5 L 140.0,90.0" fill="none" stroke="#444444" stroke-width="1.3"/>
+<rect x="38.6" y="648.0" width="202.8" height="19.0" fill="#ffffff" stroke="#bbbbbb" stroke-width="0.7"/>
+<text x="44.6" y="660.0" font-size="9.5" fill="#1a1a1a">REL-23 Vino 0*..N salas [P · AMB-11]</text>
+<path d="M 140.0,552.0 L 140.0,426.0 L 700.0,426.0 L 700.0,300.0" fill="none" stroke="#444444" stroke-width="1.3"/>
+<rect x="582.7" y="416.5" width="234.6" height="19.0" fill="#ffffff" stroke="#bbbbbb" stroke-width="0.7"/>
+<text x="588.7" y="428.5" font-size="9.5" fill="#1a1a1a">REL-21 Sala 0*..N — Transferencia 1..1 [P]</text>
+<path d="M 700.0,417.0 L 700.0,448.5 L 700.0,448.5 L 700.0,480.0" fill="none" stroke="#444444" stroke-width="1.3"/>
+<rect x="596.0" y="439.0" width="208.1" height="19.0" fill="#ffffff" stroke="#bbbbbb" stroke-width="0.7"/>
+<text x="602.0" y="451.0" font-size="9.5" fill="#1a1a1a">REL-22 Transferencia 1*..N* vinos [P]</text>
+<path d="M 600.0,531.0 L 420.0,531.0 L 420.0,657.5 L 240.0,657.5" fill="none" stroke="#444444" stroke-width="1.3"/>
+<rect x="318.6" y="648.0" width="202.8" height="19.0" fill="#ffffff" stroke="#bbbbbb" stroke-width="0.7"/>
+<text x="324.6" y="660.0" font-size="9.5" fill="#1a1a1a">REL-22 Vino 0*..N transferencias [P]</text>
+<rect x="40" y="90" width="200" height="132" rx="5" fill="#dae8fc" stroke="#6c8ebf" stroke-width="1.6" fill-opacity="0.62"/>
+<text x="49" y="105" font-size="11" font-weight="bold">Vino  [fuerte]  (referencia)</text>
+<text x="49" y="122" font-size="9.6">codigo  [K·inf]</text>
+<text x="49" y="137" font-size="9.6">nombre</text>
+<text x="49" y="152" font-size="9.6">anada</text>
+<text x="49" y="167" font-size="9.6">volumen_ml</text>
+<text x="49" y="182" font-size="9.6">precio</text>
+<text x="49" y="198" font-size="8.8" fill="#7a0000">Definida en pág. 02</text>
+<rect x="320" y="90" width="200" height="87" rx="5" fill="#fff2cc" stroke="#d6b656" stroke-width="1.6"/>
+<text x="329" y="105" font-size="11" font-weight="bold">Stock de depósito  [inventario]</text>
+<text x="329" y="122" font-size="9.6">vino  [K/FK]</text>
+<text x="329" y="137" font-size="9.6">cantidad  (RN-09: ≥0; P-6 pend.)</text>
+<text x="329" y="153" font-size="8.8" fill="#7a0000">Inventario único depósito. Candidata PK: vino [I cond. a 1 fila por vino] — D-3/AMB-11</text>
+<rect x="320" y="250" width="200" height="160" rx="5" fill="#fff2cc" stroke="#d6b656" stroke-width="1.6"/>
+<text x="329" y="265" font-size="11" font-weight="bold">Auditoría de precio  [inventario]</text>
+<text x="329" y="282" font-size="9.6">id_auditoria  [K]</text>
+<text x="329" y="297" font-size="9.6">vino  [FK]</text>
+<text x="329" y="312" font-size="9.6">precio_anterior</text>
+<text x="329" y="327" font-size="9.6">precio_nuevo</text>
+<text x="329" y="342" font-size="9.6">fecha_hora</text>
+<text x="329" y="357" font-size="9.6">usuario  (Q-07)</text>
+<text x="329" y="373" font-size="8.8" fill="#7a0000">Candidata PK: id_auditoria [R · sec. 5]</text>
+<text x="329" y="385.5" font-size="8.8" fill="#7a0000">AK (vino, fecha_hora) [P: hipótesis técnica AU-2] · RN-13</text>
+<rect x="40" y="420" width="200" height="132" rx="5" fill="#dae8fc" stroke="#6c8ebf" stroke-width="1.6" fill-opacity="0.62"/>
+<text x="49" y="435" font-size="11" font-weight="bold">Sala de venta  [fuerte]  (referencia)</text>
+<text x="49" y="452" font-size="9.6">id_sala  [K]</text>
+<text x="49" y="467" font-size="9.6">calle</text>
+<text x="49" y="482" font-size="9.6">numero</text>
+<text x="49" y="497" font-size="9.6">dia_cierre</text>
+<text x="49" y="512" font-size="9.6">localidad</text>
+<text x="49" y="528" font-size="8.8" fill="#7a0000">Definida en pág. 03</text>
+<rect x="40" y="600" width="200" height="115" rx="5" fill="#fff2cc" stroke="#d6b656" stroke-width="1.6"/>
+<text x="49" y="615" font-size="11" font-weight="bold">Stock de sala  [inventario]</text>
+<text x="49" y="632" font-size="9.6">sala  [K/FK]</text>
+<text x="49" y="647" font-size="9.6">vino  [K/FK]</text>
+<text x="49" y="662" font-size="9.6">cantidad  (RN-09: ≥0; P-6 pend.)</text>
+<text x="49" y="678" font-size="8.8" fill="#7a0000">Inventario por par. Candidata PK: (sala, vino) = SS-1 [R · textual sec. 5]</text>
+<text x="49" y="690.5" font-size="8.8" fill="#7a0000">Fila ausente ≠ cantidad 0 (AMB-11)</text>
+<rect x="600" y="300" width="200" height="117" rx="5" fill="#dae8fc" stroke="#6c8ebf" stroke-width="1.6"/>
+<text x="609" y="315" font-size="11" font-weight="bold">Transferencia  [fuerte]</text>
+<text x="609" y="332" font-size="9.6">numero  [K·pend]</text>
+<text x="609" y="347" font-size="9.6">fecha_confeccion  (RN-11: actual, inmodificable)</text>
+<text x="609" y="362" font-size="9.6">estado  (ENUM RN-11)</text>
+<text x="609" y="377" font-size="9.6">sala  [FK]</text>
+<text x="609" y="393" font-size="8.8" fill="#7a0000">Candidatas PK pendientes (TF-a): numero [P]  |  (sala, numero) [P]</text>
+<rect x="600" y="480" width="200" height="102" rx="5" fill="#ffe6cc" stroke="#d79b00" stroke-width="1.6"/>
+<text x="609" y="495" font-size="11" font-weight="bold">Renglón de transferencia  [asociativa]</text>
+<text x="609" y="512" font-size="9.6">transferencia  [K/FK]</text>
+<text x="609" y="527" font-size="9.6">vino  [K/FK]</text>
+<text x="609" y="542" font-size="9.6">cantidad</text>
+<text x="609" y="558" font-size="8.8" fill="#7a0000">Candidata PK: (transferencia, vino) [I analogía] — RT-a, AMB-10b/14</text>
+<text x="30" y="807" font-size="8.6" fill="#777777">Elaborado a partir de A-01..A-07 y docs/requisitos.md · fuente editable: 08_diagrama_entidad_relacion.drawio (diagrams.net) · este SVG se genera por script a partir del mismo layout (no es una exportación de draw.io).</text>
+</svg>

@@ -1,0 +1,23 @@
+﻿name: bodegas-del-atuel
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: bodegas-atuel-db
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    volumes:
+      - bodegas_atuel_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+volumes:
+  bodegas_atuel_postgres_data:
+    name: bodegas_atuel_postgres_data

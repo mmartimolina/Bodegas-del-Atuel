@@ -74,7 +74,7 @@ Estas reglas se documentan en su categoría correspondiente y no se presentan co
 
 **Localidad**
 
-La consigna establece que cada localidad tiene un único encargado regional. Por lo tanto, existe una dependencia funcional conceptual entre la identidad de la localidad y su encargado regional.
+La consigna establece que cada localidad tiene un único encargado regional. Esta regla permite identificar una dependencia funcional conceptual entre la identidad de la localidad y su encargado regional, aunque todavía no se haya confirmado el atributo o conjunto de atributos que identifica unívocamente a cada Localidad.
 
 Sin embargo, A-03 no confirma cuál es la clave candidata definitiva de Localidad:
 
@@ -135,7 +135,7 @@ Esta separación permite evitar la repetición de los datos generales del client
 
 La ubicación de `descuento` en `Cliente` respeta A-02. Las dudas sobre su aplicación y obligatoriedad permanecen abiertas y no se resuelven mediante este análisis.
 
-**Limitación pendiente:** A-04 mantiene abierta la ambigüedad AMB-07 sobre si la jerarquía es total o parcial y disjunta o solapada. La estrategia de mapeo elegida no resuelve esas reglas de negocio.
+**Decisión de diseño:** según lo documentado en A-06, se adopta una jerarquía total y disjunta: todo Cliente pertenece exactamente a uno de los subtipos Socio, Distribuidor o Exportador. Esta decisión no constituye un requisito textual explícito de la consigna. Su implementación requiere mecanismos adicionales de integridad, ya que las claves foráneas por sí solas no garantizan totalidad ni exclusividad.
 
 
 ### 3.3. Permisos de exportación y documentos de ventas
@@ -632,7 +632,9 @@ Esta distribución permite que los atributos comunes dependan de la identificaci
 
 Los permisos de exportación se mantienen en una relación independiente, ya que un Exportador puede tener varios permisos. De esta manera, los datos de cada permiso no se repiten dentro de Exportador.
 
-La estrategia de mapeo no demuestra por sí sola que todas las relaciones estén en 3FN. La verificación definitiva requiere considerar las claves candidatas y las dependencias funcionales de cada relación. Además, AMB-07 continúa pendiente: las restricciones de totalidad y exclusividad de la jerarquía no se deducen de esta separación.
+La estrategia de mapeo no demuestra por sí sola que todas las relaciones estén en 3FN. La verificación definitiva requiere considerar las claves candidatas y las dependencias funcionales de cada relación.
+
+Según la decisión documentada en A-06, se adopta una jerarquía total y disjunta. Esta es una decisión de diseño fundamentada, no un requisito textual explícito. Su implementación requiere mecanismos adicionales de integridad, ya que las claves foráneas por sí solas no garantizan totalidad ni exclusividad.
 
 
 ### 6.4. Permisos de exportación
@@ -868,7 +870,7 @@ No obstante, todavía existen cuestiones que impiden afirmar que todas las relac
 - Algunas claves candidatas están respaldadas por la consigna, mientras que otras son inferidas o permanecen condicionadas a reglas de unicidad pendientes.
 - La identificación de Localidad y las dependencias asociadas a su encargado regional requieren confirmar una clave candidata.
 - Permanecen pendientes definiciones sobre la identificación de Vino, Comprobante, Permiso, Ingreso, Transferencia, Transportista y Stock de depósito, entre otras cuestiones documentadas en A-01, A-03 y A-04.
-- La jerarquía de clientes mantiene abiertas las restricciones de totalidad y exclusividad señaladas en AMB-07.
+- La jerarquía de clientes se definió como total y disjunta según la decisión de diseño documentada en A-06. Su implementación requiere mecanismos adicionales de integridad para garantizar la totalidad y exclusividad de los subtipos.
 - Las relaciones asociativas cuya clave se propone por inferencia requieren validar las reglas de identificación y la posible repetición de participantes.
 
 Por lo tanto, este documento presenta un análisis de dependencias funcionales y de normalización hasta 3FN sobre el modelo conceptual propuesto, pero no constituye una certificación definitiva de que todas las relaciones del esquema relacional cumplen esa forma normal.
@@ -1045,7 +1047,7 @@ Las claves propuestas por inferencia deberán contrastarse con las reglas de neg
 
 También permanecen abiertas algunas cuestiones del análisis de relaciones y cardinalidades:
 
-- **AMB-07:** no se confirmó si la jerarquía de Cliente es total o parcial, ni si sus subtipos son disjuntos o solapados.
+- **Jerarquía de Cliente:** se adoptó una jerarquía total y disjunta, según lo documentado en A-06. Queda pendiente definir e implementar los mecanismos de integridad necesarios para garantizar esa regla.
 - **AMB-08:** debe confirmarse la regla de pertenencia de los permisos de exportación.
 - **AMB-10a, AMB-10b y AMB-14:** permanecen pendientes la posibilidad de que un Comprobante, Ingreso o Transferencia exista sin renglones y la relación entre el estado del documento y esa condición.
 - **AMB-11:** debe definirse si la ausencia de una fila de stock es válida y cómo se representa una existencia igual a cero. La ausencia de una fila no equivale automáticamente a una cantidad cero.

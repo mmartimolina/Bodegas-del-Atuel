@@ -1,4 +1,4 @@
-# A-03 — Claves candidatas por entidad
+﻿# A-03 — Claves candidatas por entidad
 
 > Issue A-03 · Responsable: Persona A · Estado: **borrador conceptual revisado (no decidido)**
 > Fuente: `docs/Consigna/TPI_Bodegas_del_Atuel.pdf` (secciones 3, 4, 5 y 7),
@@ -202,39 +202,24 @@ confirma la unicidad del nombre**; mientras siga pendiente, no se la declara can
 
 | Candidata | Atributos | Categoría | Justificación |
 |---|---|---|---|
-| LoteK-1 | n_lote | Identificador posible pendiente de validación | La sección 5 lista «N.° de lote». Un número de lote es por naturaleza identificador de un suceso, pero el PDF no declara su alcance (global o relativo a parcela/campaña). Mientras esa unicidad global no se confirme, se lo trata como identificador posible, no como candidata confirmada. |
-| LoteK-2 (compuesta) | parcela + campania | Identificador posible pendiente de validación (unicidad textual; minimalidad no demostrada) | RN-04: una parcela se cosecha «como máximo una vez por campaña», y la etapa 2 ejemplifica `UNIQUE (parcela, campaña)`. La restricción garantiza la **unicidad de la combinación**. No garantiza por sí sola la **minimalidad**: que ninguno de los atributos por separado sea único es una inferencia del dominio, no un texto de la consigna. |
+| LoteK-1 | n_lote | Alternativa descartada como PK | La sección 5 lista «N.° de lote», pero no establece su unicidad global. Se conserva como atributo descriptivo, sin restricción UNIQUE. |
+| LoteK-2 (compuesta) | parcela + campania | Clave primaria adoptada | RN-04 establece que una parcela se cosecha como máximo una vez por campaña. Se adopta como regla de diseño que cada combinación de parcela y campaña identifica un único lote. |
 
-**Minimalidad de LoteK-1:** sería minimal (un atributo) **si se confirma la unicidad global de
-`n_lote`**; hoy su alcance sigue pendiente.
+**Minimalidad de LoteK-2:** se fundamenta en los siguientes supuestos de diseño:
+- `parcela` sola no es única: una misma parcela puede producir lotes en distintas campañas.
+- `campania` sola no es única: una campaña puede incluir lotes provenientes de distintas parcelas.
+- Por lo tanto, ambos atributos son necesarios para identificar un lote.
 
-**Minimalidad de LoteK-2:** el UNIQUE de etapa 2 declara la combinación completa. Para afirmar que es
-minimal hay que probar que ningún subconjunto propio es único:
-- `parcela` sola: parecería no ser única porque una parcela puede cosecharse en varias campañas, pero
-  el PDF no dice cuántas veces se cosecha una parcela en su vida; es inferencia.
-- `campania` sola: parecería no ser única porque en una campaña se cosechan varias parcelas, pero el
-  PDF no lo declara; también es inferencia.
-- La lectura natural del negocio (una parcela tiene lotes de varias campañas y una campaña agrupa
-  lotes de varias parcelas) es plausible y está alineada con los volúmenes de la etapa 3, pero no es
-  una regla textual.
-- Conclusión: **LoteK-2 queda como candidata pendiente de confirmación de minimalidad**, no como
-  candidata plenamente respaldada.
+**Decisiones de diseño adoptadas:**
+- La PK conceptual de `Lote` es `(parcela, campania)`.
+- Como `Parcela` tiene PK compuesta `(finca, n_parcela)`, la PK relacional de `Lote` se implementa como `(finca, n_parcela, campania)`.
+- Se adopta que las cosechas parciales de una misma parcela y campaña no generan lotes independientes. Existe como máximo un lote por combinación.
+- `n_lote` se conserva como atributo descriptivo. No se presupone que sea globalmente único ni se impone una restricción UNIQUE.
+- La PK compuesta garantiza la unicidad de la combinación parcela-campaña y permite referenciar el lote desde `Analisis`.
 
-**Respaldos y dudas:**
-- En este caso **coexisten dos candidatas** con naturaleza distinta: una «etiqueta» del suceso
-  (n.° de lote) y una «identidad por regla de negocio» (parcela, campaña). La sección 5 y RN-04
-  respaldan la existencia de ambas. Qué una se elija como PK (y entonces la otra UNIQUE, o
-  viceversa) es la decisión de diseño que la sección 5 pide justificar.
-- Duda LoteK-a (Q-02 de A-02 continúa abierta): ¿el n.° de lote es único global o relativo a la
-  parcela/campaña? Si fuera relativo, **LoteK-1 dejaría de ser candidata a nivel global** y la
-  clave pasaría a ser (parcela, campania, n_lote), poco probable; sin respaldo textual el PDF sugiere
-  la lectura global («N.° de lote» como dato propio). **Pendiente de validación.**
-- Supuesto LoteK-b: para LoteK-2, el único lote por (parcela, campaña) excluye cosechas parciales
-  separadas en el mismo año. RN-04 así lo garantiza; si la cátedra pensara en más de una cosecha
-  por campaña (uvas de fechas distintas), habría que agregar un dato. Sin respaldo, no se agrega.
+**Alternativa descartada:** utilizar `n_lote` como PK requeriría asumir una unicidad global que no está establecida en la consigna. Se prefiere la identidad basada en la regla de negocio RN-04.
 
 ---
-
 ### 2.8 Análisis de calidad
 
 | Candidata | Atributos | Categoría | Justificación |
@@ -693,7 +678,7 @@ condición de unicidad sigue atada a D-3.
 | 4 | Finca | id_finca | R: «ID» explícito (unicidad semántica). |
 | 5 | Parcela | (finca, n_parcela) | R: 3.2, sección 5 y etapa 1. |
 | 6 | Cepa | id; nombre | R: «ID» explícito (unicidad semántica). P: nombre sin UNIQUE textual. |
-| 7 | Lote de uva | n_lote; (parcela, campania) | P: n_lote con alcance global no declarado. P: (parcela, campania) tiene unicidad textual (UNIQUE) pero minimalidad no demostrada. |
+| 7 | Lote de uva | (parcela, campania) | Clave primaria adoptada por RN-04 y la regla de diseño documentada en §2.7. `n_lote` se conserva como atributo descriptivo. |
 | 8 | Análisis de calidad | id_analisis; (lote, fecha) | R: «ID» explícito (unicidad semántica; identidad de fila dudosa). P: (lote, fecha) sin regla de unicidad. |
 | 9 | Bodega | cuit | R: UNIQUE explícito de etapa 2; PK no decidida. |
 | 10 | Vino | codigo; (nombre, anada, volumen_ml) | I: código de producto + API, sin UNIQUE textual. P: combinación con unicidad textual y minimalidad no demostrada formalmente. |
@@ -729,9 +714,9 @@ condición de unicidad sigue atada a D-3.
 | Bodega: cuit | Etapa 2, UNIQUE explícito | Respaldo textual de unicidad; no decide PK. |
 | Sala, Finca, Cepa, Maridaje, Cliente, Análisis y Auditoría: atributo «ID» | Sección 5 | La consigna respalda la **unicidad semántica** del identificador de fila. No implica elección de PK ni obligación de autogeneración; la forma concreta se decide en A-04. Las dudas particulares (p. ej. la identidad de Análisis de calidad) se conservan. |
 
-> Lote (parcela, campania) y Vino (nombre, anada, volumen_ml) **no** se incluyen aquí como claves
-> plenamente respaldadas: tienen unicidad textual (UNIQUE de etapa 2), pero su minimalidad no está
-> demostrada formalmente. Se listan en 4.3.
+> Vino (nombre, anada, volumen_ml) **no** se incluye aquí como clave plenamente respaldada:
+> tiene unicidad textual (UNIQUE de etapa 2), pero su minimalidad no está demostrada formalmente.
+> Se lista en 4.3. La clave de Lote fue adoptada; ver §2.7 y DEC-02.
 
 ### 4.2 Claves inferidas con fundamento suficiente
 
@@ -756,8 +741,6 @@ condición de unicidad sigue atada a D-3.
 | Localidad: (nombre, provincia) | Si existen homónimos dentro de una provincia. |
 | Cepa: nombre | Si el nombre de variedad es único en el catálogo. |
 | Maridaje: nombre | Si el nombre de la recomendación es único en el catálogo. |
-| Lote de uva: n_lote | Si la numeración es global o relativa a parcela/campaña. |
-| Lote de uva: (parcela, campania) | Minimalidad: probar que parcela sola y campania sola no son únicas. |
 | Análisis de calidad: (lote, fecha) | Si puede haber más de un análisis del mismo lote el mismo día. |
 | Vino: (nombre, anada, volumen_ml) | Minimalidad formal: probar que ningún subconjunto propio es único. |
 | Cliente: (tipo_doc, n_doc) | Si el documento es único y si una persona puede tener más de un tipo de documento. |
@@ -786,7 +769,7 @@ condición de unicidad sigue atada a D-3.
 | Comprobante, Ingreso y Transferencia | Alcance de la numeración: global o por sala/bodega. | Sección 5; API. |
 | Localidad | Unicidad del código postal y de (nombre, provincia). | Sección 5. |
 | Cepa, Maridaje, Cliente | Unicidad del nombre o del documento. | Sección 5; Anexo B. |
-| Lote de uva | Alcance de n_lote y minimalidad de (parcela, campania). | RN-04; Q-02 de A-02. |
+
 | Vino | Minimalidad de (nombre, anada, volumen_ml) y alcance del catálogo de volúmenes. | 3.3; etapa 2; P-8 de `requisitos.md` §10.1.7. |
 | Empleado y Transportista | CUIT como clave natural vs. identificador subrogado; confirmar si todo empleado es persona física con CUIT propio y el alcance del CUIT de transportista. | Sección 5; etapa 2. |
 | Bodega | Elegir CUIT o ID subrogado como PK, sin perder el UNIQUE de CUIT. | Etapa 2; sección 5. |
@@ -810,8 +793,8 @@ condición de unicidad sigue atada a D-3.
   aparecer claves candidatas nuevas. Pendientes las respuestas.
 - **Dudas de A-01 que impactan claves:** D-1 (jerarquía de Cliente), D-3 (stock de depósito),
   D-6 (identidad del análisis), D-9 (N:M como entidad o relación) y D-10 (auditoría en el DER).
-- **Dudas de A-02 que impactan claves:** Q-02 (identidad del lote), Q-06 (identidad del análisis) y
-  Q-12 (estado del permiso, solo como referencia). Q-01, Q-03, Q-04, Q-05, Q-07, Q-08, Q-09, Q-10,
+- **Dudas de A-02 que impactan claves:** Q-06 (identidad del análisis) y
+  Q-12 (estado del permiso, solo como referencia). Q-02 (identidad del lote) fue resuelta mediante DEC-02. Q-01, Q-03, Q-04, Q-05, Q-07, Q-08, Q-09, Q-10,
   Q-11 y Q-13 no modifican las claves analizadas (afectan atributos, dominios o valores derivados).
 
 ---

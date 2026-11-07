@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="930" height="675" viewBox="0 0 930 675" font-family="Helvetica,Arial,sans-serif">
+<rect width="930" height="675" fill="#ffffff"/>
+<text x="30" y="34" font-size="17" font-weight="bold">A-08 · DER (2/6) — Elaboración de vinos</text>
+<text x="30" y="56" font-size="9.5" fill="#333333">Notación: K = clave candidata respaldada [R] · I = inferida · P = pendiente de validación · AK = alterna · K/FK = componente de clave y foránea · FK → subrogada de cabecera/roja (débil: clave propietaria + parcial). Colores: azul = fuerte · verde (borde discontinuo) = débil · naranja = asociativa · amarillo = inventario · violeta = supertipo · violeta claro = subtipo. Cardinalidad &quot;A x..y — z..w B&quot; por extremo (A-04); * = extremo inferido. Cajas grises = referencia repetida de otra página.</text>
+<text x="30" y="70" font-size="9.5" fill="#333333">Cardinalidades: rangos independientes por extremo (A-04: A x..y — z..w B); * junto al extremo inferido/condicionado; mínimo 0 = participación parcial.</text>
+<path d="M 240.0,141.0 L 270.0,141.0 L 270.0,178.5 L 300.0,178.5" fill="none" stroke="#444444" stroke-width="1.3"/>
+<rect x="152.7" y="162.5" width="234.6" height="32.0" fill="#ffffff" stroke="#bbbbbb" stroke-width="0.7"/>
+<text x="158.7" y="174.5" font-size="9.5" fill="#1a1a1a">REL-09 Bodega 2*..N — Vino 1..1 (&quot;varios&quot;;</text>
+<text x="158.7" y="187.5" font-size="9.5" fill="#1a1a1a">mín. 2 no definitivo: AMB-05) [P]</text>
+<path d="M 410.0,267.0 L 410.0,358.5 L 400.0,358.5 L 400.0,450.0" fill="none" stroke="#444444" stroke-width="1.3"/>
+<rect x="277.4" y="342.5" width="245.2" height="32.0" fill="#ffffff" stroke="#bbbbbb" stroke-width="0.7"/>
+<text x="283.4" y="354.5" font-size="9.5" fill="#1a1a1a">REL-10 Vino 1..N cepas (mín. 1 expreso: &quot;una</text>
+<text x="283.4" y="367.5" font-size="9.5" fill="#1a1a1a">o más&quot;) [P]</text>
+<path d="M 300.0,507.5 L 270.0,507.5 L 270.0,471.0 L 240.0,471.0" fill="none" stroke="#444444" stroke-width="1.3"/>
+<rect x="152.7" y="455.0" width="234.6" height="32.0" fill="#ffffff" stroke="#bbbbbb" stroke-width="0.7"/>
+<text x="158.7" y="467.0" font-size="9.5" fill="#1a1a1a">REL-10 Cepa 0*..N vinos (mín. 0 indirecto:</text>
+<text x="158.7" y="480.0" font-size="9.5" fill="#1a1a1a">D2) [P]</text>
+<path d="M 520.0,178.5 L 560.0,178.5 L 560.0,500.0 L 600.0,500.0" fill="none" stroke="#444444" stroke-width="1.3"/>
+<rect x="440.1" y="484.0" width="239.9" height="32.0" fill="#ffffff" stroke="#bbbbbb" stroke-width="0.7"/>
+<text x="446.1" y="496.0" font-size="9.5" fill="#1a1a1a">REL-11 Vino 1..N maridajes (mín. 1 expreso)</text>
+<text x="446.1" y="509.0" font-size="9.5" fill="#1a1a1a">[P]</text>
+<path d="M 800.0,500.0 L 700.0,500.0 L 700.0,147.5 L 600.0,147.5" fill="none" stroke="#444444" stroke-width="1.3"/>
+<rect x="601.2" y="131.5" width="197.5" height="32.0" fill="#ffffff" stroke="#bbbbbb" stroke-width="0.7"/>
+<text x="607.2" y="143.5" font-size="9.5" fill="#1a1a1a">REL-11 Maridaje 0*..N vinos (mín. 0</text>
+<text x="607.2" y="156.5" font-size="9.5" fill="#1a1a1a">inferido: AMB-16) [P]</text>
+<rect x="40" y="560" width="380" height="38" rx="5" fill="#fff2cc" stroke="#d6b656"/>
+<text x="48" y="576" font-size="9.5" fill="#333333">Lote → Bodega (REL-07): llega desde el módulo 1 (pág. 01). Roles de</text>
+<text x="48" y="589" font-size="9.5" fill="#333333">bodega separados (AMB-06).</text>
+<rect x="40" y="90" width="200" height="102" rx="5" fill="#dae8fc" stroke="#6c8ebf" stroke-width="1.6"/>
+<text x="49" y="105" font-size="11" font-weight="bold">Bodega  [fuerte]</text>
+<text x="49" y="122" font-size="9.6">cuit  [K — UNIQUE etapa 2]</text>
+<text x="49" y="137" font-size="9.6">razon_social</text>
+<text x="49" y="152" font-size="9.6">domicilio</text>
+<text x="49" y="168" font-size="8.8" fill="#7a0000">Candidata PK: cuit [R por UNIQUE textual; PK no decidida; alternativa ID subrogado abierta]</text>
+<rect x="300" y="90" width="220" height="177" rx="5" fill="#dae8fc" stroke="#6c8ebf" stroke-width="1.6"/>
+<text x="309" y="105" font-size="11" font-weight="bold">Vino  [fuerte]</text>
+<text x="309" y="122" font-size="9.6">codigo  [K·inf: API /vinos/{cod}; sin UNIQUE textual]</text>
+<text x="309" y="137" font-size="9.6">nombre</text>
+<text x="309" y="152" font-size="9.6">tipo</text>
+<text x="309" y="167" font-size="9.6">anada</text>
+<text x="309" y="182" font-size="9.6">volumen_ml</text>
+<text x="309" y="197" font-size="9.6">graduacion</text>
+<text x="309" y="212" font-size="9.6">precio  (RN-01: único en red, &gt; 0)</text>
+<text x="309" y="227" font-size="9.6">bodega  [FK]</text>
+<text x="309" y="243" font-size="8.8" fill="#7a0000">Candidatas PK pendientes (VK): codigo [I]  |  (nombre, anada, volumen_ml) [P: unicidad textual; minimalidad no demostrada]</text>
+<rect x="600" y="90" width="200" height="115" rx="5" fill="#dae8fc" stroke="#6c8ebf" stroke-width="1.6"/>
+<text x="609" y="105" font-size="11" font-weight="bold">Maridaje  [fuerte]</text>
+<text x="609" y="122" font-size="9.6">id  [K]</text>
+<text x="609" y="137" font-size="9.6">nombre</text>
+<text x="609" y="152" font-size="9.6">temperatura</text>
+<text x="609" y="168" font-size="8.8" fill="#7a0000">Candidata PK: id [R]</text>
+<text x="609" y="180.5" font-size="8.8" fill="#7a0000">nombre: AK [P] (sin UNIQUE textual; MK-2)</text>
+<rect x="40" y="420" width="200" height="102" rx="5" fill="#dae8fc" stroke="#6c8ebf" stroke-width="1.6" fill-opacity="0.62"/>
+<text x="49" y="435" font-size="11" font-weight="bold">Cepa  [fuerte]  (referencia)</text>
+<text x="49" y="452" font-size="9.6">id  [K]</text>
+<text x="49" y="467" font-size="9.6">nombre</text>
+<text x="49" y="482" font-size="9.6">tipo</text>
+<text x="49" y="498" font-size="8.8" fill="#7a0000">Definida en pág. 01</text>
+<rect x="300" y="450" width="200" height="115" rx="5" fill="#ffe6cc" stroke="#d79b00" stroke-width="1.6"/>
+<text x="309" y="465" font-size="11" font-weight="bold">Composición (vino–cepa)  [asociativa]</text>
+<text x="309" y="482" font-size="9.6">vino  [K/FK]</text>
+<text x="309" y="497" font-size="9.6">cepa  [K/FK]</text>
+<text x="309" y="512" font-size="9.6">porcentaje  (RN-05: suma 100 por vino)</text>
+<text x="309" y="528" font-size="8.8" fill="#7a0000">N:M con atributo (REL-10)</text>
+<text x="309" y="540.5" font-size="8.8" fill="#7a0000">Candidata PK: (vino, cepa) = ComK-1 [I] — ComK-a abierto</text>
+<rect x="600" y="450" width="200" height="100" rx="5" fill="#ffe6cc" stroke="#d79b00" stroke-width="1.6"/>
+<text x="609" y="465" font-size="11" font-weight="bold">Vino–Maridaje  [asociativa]</text>
+<text x="609" y="482" font-size="9.6">vino  [K/FK]</text>
+<text x="609" y="497" font-size="9.6">maridaje  [K/FK]</text>
+<text x="609" y="513" font-size="8.8" fill="#7a0000">N:M sin atributos (REL-11)</text>
+<text x="609" y="525.5" font-size="8.8" fill="#7a0000">Candidata PK: (vino, maridaje) = VMK-1 [I] — D-9 abierto</text>
+<text x="30" y="657" font-size="8.6" fill="#777777">Elaborado a partir de A-01..A-07 y docs/requisitos.md · fuente editable: 08_diagrama_entidad_relacion.drawio (diagrams.net) · este SVG se genera por script a partir del mismo layout (no es una exportación de draw.io).</text>
+</svg>

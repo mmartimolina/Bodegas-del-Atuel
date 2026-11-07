@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="930" height="817" viewBox="0 0 930 817" font-family="Helvetica,Arial,sans-serif">
+<rect width="930" height="817" fill="#ffffff"/>
+<text x="30" y="34" font-size="17" font-weight="bold">A-08 · DER (5/6) — Logística (transportista y aprovisionamiento)</text>
+<text x="30" y="56" font-size="9.5" fill="#333333">Notación: K = clave candidata respaldada [R] · I = inferida · P = pendiente de validación · AK = alterna · K/FK = componente de clave y foránea · FK → subrogada de cabecera/roja (débil: clave propietaria + parcial). Colores: azul = fuerte · verde (borde discontinuo) = débil · naranja = asociativa · amarillo = inventario · violeta = supertipo · violeta claro = subtipo. Cardinalidad &quot;A x..y — z..w B&quot; por extremo (A-04); * = extremo inferido. Cajas grises = referencia repetida de otra página.</text>
+<text x="30" y="70" font-size="9.5" fill="#333333">Cardinalidades: rangos independientes por extremo (A-04: A x..y — z..w B); * junto al extremo inferido/condicionado; mínimo 0 = participación parcial.</text>
+<path d="M 240.0,163.5 L 280.0,163.5 L 280.0,236.0 L 320.0,236.0" fill="none" stroke="#444444" stroke-width="1.3"/>
+<rect x="165.4" y="220.0" width="229.3" height="32.0" fill="#ffffff" stroke="#bbbbbb" stroke-width="0.7"/>
+<text x="171.4" y="232.0" font-size="9.5" fill="#1a1a1a">REL-19 Transportista 0*..N — Ingreso 1..1</text>
+<text x="171.4" y="245.0" font-size="9.5" fill="#1a1a1a">[P]</text>
+<path d="M 140.0,402.0 L 140.0,286.0 L 420.0,286.0 L 420.0,170.0" fill="none" stroke="#444444" stroke-width="1.3"/>
+<rect x="310.6" y="270.0" width="218.7" height="32.0" fill="#ffffff" stroke="#bbbbbb" stroke-width="0.7"/>
+<text x="316.6" y="282.0" font-size="9.5" fill="#1a1a1a">REL-18 Bodega 0*..N — Ingreso 1..1 (rol</text>
+<text x="316.6" y="295.0" font-size="9.5" fill="#1a1a1a">&quot;origen&quot;: AMB-06) [P]</text>
+<path d="M 140.0,237.0 L 140.0,328.5 L 420.0,328.5 L 420.0,420.0" fill="none" stroke="#444444" stroke-width="1.3"/>
+<rect x="313.3" y="312.5" width="213.4" height="32.0" fill="#ffffff" stroke="#bbbbbb" stroke-width="0.7"/>
+<text x="319.3" y="324.5" font-size="9.5" fill="#1a1a1a">REL-17 Transportista 0*..N localidades</text>
+<text x="319.3" y="337.5" font-size="9.5" fill="#1a1a1a">(cobertura) [P · AMB-09]</text>
+<path d="M 420.0,533.0 L 420.0,561.5 L 420.0,561.5 L 420.0,590.0" fill="none" stroke="#444444" stroke-width="1.3"/>
+<rect x="302.7" y="545.5" width="234.6" height="32.0" fill="#ffffff" stroke="#bbbbbb" stroke-width="0.7"/>
+<text x="308.7" y="557.5" font-size="9.5" fill="#1a1a1a">REL-17 Localidad 0*..N transportistas [P ·</text>
+<text x="308.7" y="570.5" font-size="9.5" fill="#1a1a1a">AMB-09]</text>
+<path d="M 420.0,302.0 L 420.0,386.0 L 700.0,386.0 L 700.0,470.0" fill="none" stroke="#444444" stroke-width="1.3"/>
+<rect x="611.9" y="376.5" width="176.3" height="19.0" fill="#ffffff" stroke="#bbbbbb" stroke-width="0.7"/>
+<text x="617.9" y="388.5" font-size="9.5" fill="#1a1a1a">REL-20 Ingreso 1*..N* vinos [P]</text>
+<path d="M 800.0,521.0 L 700.0,521.0 L 700.0,190.0" fill="none" stroke="#444444" stroke-width="1.3"/>
+<rect x="614.5" y="511.5" width="171.0" height="19.0" fill="#ffffff" stroke="#bbbbbb" stroke-width="0.7"/>
+<text x="620.5" y="523.5" font-size="9.5" fill="#1a1a1a">REL-20 Vino 0*..N ingresos [P]</text>
+<rect x="40" y="90" width="200" height="147" rx="5" fill="#dae8fc" stroke="#6c8ebf" stroke-width="1.6"/>
+<text x="49" y="105" font-size="11" font-weight="bold">Transportista  [fuerte]</text>
+<text x="49" y="122" font-size="9.6">codigo  [K·pend]</text>
+<text x="49" y="137" font-size="9.6">razon_social</text>
+<text x="49" y="152" font-size="9.6">cuit  [K·inf]</text>
+<text x="49" y="167" font-size="9.6">email</text>
+<text x="49" y="182" font-size="9.6">telefono</text>
+<text x="49" y="197" font-size="9.6">domicilio</text>
+<text x="49" y="213" font-size="8.8" fill="#7a0000">Candidatas PK pendientes (TK): codigo [P]  |  cuit [I dominial]  |  ID: no hay &quot;ID&quot; en sec. 5</text>
+<rect x="40" y="300" width="200" height="102" rx="5" fill="#dae8fc" stroke="#6c8ebf" stroke-width="1.6" fill-opacity="0.62"/>
+<text x="49" y="315" font-size="11" font-weight="bold">Bodega  [fuerte]  (referencia)</text>
+<text x="49" y="332" font-size="9.6">cuit  [K]</text>
+<text x="49" y="347" font-size="9.6">razon_social</text>
+<text x="49" y="362" font-size="9.6">domicilio</text>
+<text x="49" y="378" font-size="8.8" fill="#7a0000">Definida en pág. 02</text>
+<rect x="320" y="170" width="200" height="132" rx="5" fill="#dae8fc" stroke="#6c8ebf" stroke-width="1.6"/>
+<text x="329" y="185" font-size="11" font-weight="bold">Ingreso  [fuerte]</text>
+<text x="329" y="202" font-size="9.6">codigo  [K·pend]</text>
+<text x="329" y="217" font-size="9.6">fecha  (semántica Q-03)</text>
+<text x="329" y="232" font-size="9.6">estado  (ENUM RN-10)</text>
+<text x="329" y="247" font-size="9.6">transportista  [FK]</text>
+<text x="329" y="262" font-size="9.6">bodega_origen  [FK]</text>
+<text x="329" y="278" font-size="8.8" fill="#7a0000">Candidatas PK pendientes (IK): codigo [P]  |  (bodega_origen, codigo) [P]</text>
+<rect x="320" y="420" width="200" height="113" rx="5" fill="#ffe6cc" stroke="#d79b00" stroke-width="1.6"/>
+<text x="329" y="435" font-size="11" font-weight="bold">Transportista–Localidad  [asociativa]</text>
+<text x="329" y="452" font-size="9.6">transportista  [K/FK]</text>
+<text x="329" y="467" font-size="9.6">localidad  [K/FK]</text>
+<text x="329" y="483" font-size="8.8" fill="#7a0000">N:M sin atributos (cobertura REL-17)</text>
+<text x="329" y="495.5" font-size="8.8" fill="#7a0000">Candidata PK: (transportista, localidad) [I] — D-9</text>
+<text x="329" y="508.0" font-size="8.8" fill="#7a0000">≠ zona del Distribuidor (AMB-15 resuelta)</text>
+<rect x="320" y="590" width="200" height="117" rx="5" fill="#dae8fc" stroke="#6c8ebf" stroke-width="1.6" fill-opacity="0.62"/>
+<text x="329" y="605" font-size="11" font-weight="bold">Localidad  [fuerte]  (referencia)</text>
+<text x="329" y="622" font-size="9.6">codigo_postal</text>
+<text x="329" y="637" font-size="9.6">nombre</text>
+<text x="329" y="652" font-size="9.6">provincia</text>
+<text x="329" y="667" font-size="9.6">encargado_regional</text>
+<text x="329" y="683" font-size="8.8" fill="#7a0000">Definida en pág. 03</text>
+<rect x="600" y="470" width="200" height="102" rx="5" fill="#ffe6cc" stroke="#d79b00" stroke-width="1.6"/>
+<text x="609" y="485" font-size="11" font-weight="bold">Renglón de ingreso  [asociativa]</text>
+<text x="609" y="502" font-size="9.6">ingreso  [K/FK]</text>
+<text x="609" y="517" font-size="9.6">vino  [K/FK]</text>
+<text x="609" y="532" font-size="9.6">cantidad</text>
+<text x="609" y="548" font-size="8.8" fill="#7a0000">Candidata PK: (ingreso, vino) [I analogía; sin clave textual] — RI-a, AMB-10b/14</text>
+<rect x="600" y="190" width="200" height="117" rx="5" fill="#dae8fc" stroke="#6c8ebf" stroke-width="1.6" fill-opacity="0.62"/>
+<text x="609" y="205" font-size="11" font-weight="bold">Vino  [fuerte]  (referencia)</text>
+<text x="609" y="222" font-size="9.6">codigo  [K·inf]</text>
+<text x="609" y="237" font-size="9.6">nombre</text>
+<text x="609" y="252" font-size="9.6">anada</text>
+<text x="609" y="267" font-size="9.6">volumen_ml</text>
+<text x="609" y="283" font-size="8.8" fill="#7a0000">Definida en pág. 02</text>
+<text x="30" y="799" font-size="8.6" fill="#777777">Elaborado a partir de A-01..A-07 y docs/requisitos.md · fuente editable: 08_diagrama_entidad_relacion.drawio (diagrams.net) · este SVG se genera por script a partir del mismo layout (no es una exportación de draw.io).</text>
+</svg>

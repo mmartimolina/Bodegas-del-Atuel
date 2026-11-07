@@ -1,0 +1,23 @@
+Modelo completo: 29 conceptos (A-01 §2; 27 si los subtipos se cuentan como jerarquía). Jerarquía Cliente: total y disjunta, según DEC-11/12; estrategia A-06 (supertipo + 3 subtipos), según DEC-13. Revisión de Persona B pendiente. Claves: las cajas muestran claves candidatas y decisiones adoptadas, con su estado (R respaldada / I inferida / P pendiente). Cardinalidades: notación independiente por extremo de A-04 ("A x..y — z..w B"); * = extremo inferido o condicionado; mínimo 0 = participación parcial.
+Socio [subtipo]
+id_cliente [PK/FK heredada · DEC-13]
+SUBTIPO sin atributos propios.
+Distribuidor [subtipo]
+id_cliente [PK/FK heredada · DEC-13]
+zona
+n_habilitacion [AK·pend]
+n_habilitacion sin unicidad garantizada (DK-2)
+Exportador [subtipo]
+id_cliente [PK/FK heredada · DEC-13]
+pais
+REL-15 especialización total y disjunta (DEC-11/12)
+Jerarquía total y disjunta adoptada: cada Cliente pertenece exactamente a uno de los tres subtipos (DEC-11/12). Estrategia supertipo + subtipos adoptada (DEC-13). Las claves foráneas por sí solas no garantizan totalidad ni exclusividad; mecanismos adicionales de integridad pendientes. Revisión de Persona B pendiente.
+Cliente [supertipo] (referencia)
+id_cliente [PK]
+nombre
+tipo_doc + n_doc
+direccion
+localidad
+fecha_alta
+descuento
+Definida en pág. 03 (jerarquía total y disjunta; DEC-11/12/13)
