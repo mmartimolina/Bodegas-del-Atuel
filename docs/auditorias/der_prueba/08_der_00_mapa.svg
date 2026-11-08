@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="750" height="856" viewBox="0 0 750 856" font-family="Helvetica,Arial,sans-serif">
+<rect width="750" height="856" fill="#ffffff"/>
+<text x="30" y="34" font-size="17" font-weight="bold">A-08 · DER — Mapa de módulos</text>
+<rect x="30" y="60" width="650" height="88" rx="5" fill="#f5f5f5" stroke="#888888"/>
+<text x="42" y="80" font-size="12" font-weight="bold">Módulo 1 — Producción de uva (pág. 01)</text>
+<text x="44" y="98" font-size="10">Finca · Parcela (débil, identificada por Finca) · Cepa · Lote de uva · Análisis de calidad</text>
+<text x="42" y="140" font-size="9" fill="#555555">REL-04, REL-05, REL-06, REL-08  +  REL-07 (Lote→Bodega, cruz a módulo 2)</text>
+<rect x="30" y="156" width="650" height="88" rx="5" fill="#f5f5f5" stroke="#888888"/>
+<text x="42" y="176" font-size="12" font-weight="bold">Módulo 2 — Elaboración de vinos (pág. 02)</text>
+<text x="44" y="194" font-size="10">Bodega · Vino · Maridaje · Composición (asoc. con atributo) · Vino–Maridaje (asoc. sin</text>
+<text x="44" y="207" font-size="10">atributos)</text>
+<text x="42" y="236" font-size="9" fill="#555555">REL-09, REL-10, REL-11</text>
+<rect x="30" y="252" width="650" height="88" rx="5" fill="#f5f5f5" stroke="#888888"/>
+<text x="42" y="272" font-size="12" font-weight="bold">Módulo 3 — Red comercial y jerarquía (pág. 03)</text>
+<text x="44" y="290" font-size="10">Localidad · Sala de venta · Empleado · Cliente (supertipo) · Socio / Distribuidor / Exportador</text>
+<text x="44" y="303" font-size="10">(subtipos) · Permiso de exportación</text>
+<text x="42" y="332" font-size="9" fill="#555555">REL-01, REL-02, REL-03, REL-15 (jerarquía total y disjunta, DEC-11/12/13), REL-16</text>
+<rect x="30" y="348" width="650" height="88" rx="5" fill="#f5f5f5" stroke="#888888"/>
+<text x="42" y="368" font-size="12" font-weight="bold">Módulo 4 — Ventas (pág. 04)</text>
+<text x="44" y="386" font-size="10">Comprobante · Renglón de comprobante (asoc. con atributos; precio histórico) [Cliente / Sala /</text>
+<text x="44" y="399" font-size="10">Vino repetidas como referencia]</text>
+<text x="42" y="428" font-size="9" fill="#555555">REL-12, REL-13, REL-14</text>
+<rect x="30" y="444" width="650" height="88" rx="5" fill="#f5f5f5" stroke="#888888"/>
+<text x="42" y="464" font-size="12" font-weight="bold">Módulo 5 — Logística (pág. 05)</text>
+<text x="44" y="482" font-size="10">Transportista · Transportista–Localidad (cobertura, asoc.) · Ingreso · Renglón de ingreso</text>
+<text x="44" y="495" font-size="10">(asoc.)</text>
+<text x="42" y="524" font-size="9" fill="#555555">REL-17, REL-18, REL-19, REL-20</text>
+<rect x="30" y="540" width="650" height="88" rx="5" fill="#f5f5f5" stroke="#888888"/>
+<text x="42" y="560" font-size="12" font-weight="bold">Módulo 6 — Depósito, stock y auditoría (pág. 06)</text>
+<text x="44" y="578" font-size="10">Stock de depósito · Auditoría de precio · Stock de sala · Transferencia · Renglón de</text>
+<text x="44" y="591" font-size="10">transferencia (asoc.)</text>
+<text x="42" y="620" font-size="9" fill="#555555">REL-21, REL-22, REL-23, REL-24, REL-25</text>
+<rect x="30" y="648" width="650" height="120" rx="5" fill="#fff2cc" stroke="#d6b656"/>
+<text x="42" y="666" font-size="9.8" fill="#333333">Modelo completo: 29 conceptos (A-01 §2; 27 si los subtipos se cuentan como jerarquía). Jerarquía Cliente:</text>
+<text x="42" y="679" font-size="9.8" fill="#333333">total y disjunta, según DEC-11/12; estrategia A-06 (supertipo + 3 subtipos), según DEC-13. Revisión de</text>
+<text x="42" y="692" font-size="9.8" fill="#333333">Persona B pendiente. Claves: las cajas muestran claves candidatas y decisiones adoptadas, con su estado (R</text>
+<text x="42" y="705" font-size="9.8" fill="#333333">respaldada / I inferida / P pendiente). Cardinalidades: notación independiente por extremo de A-04 (&quot;A x..y</text>
+<text x="42" y="718" font-size="9.8" fill="#333333">— z..w B&quot;); * = extremo inferido o condicionado; mínimo 0 = participación parcial.</text>
+<text x="30" y="840" font-size="8.6" fill="#777777">Fuente editable: 08_diagrama_entidad_relacion.drawio (7 páginas, diagrams.net). Este SVG se genera por script a partir del mismo layout (no es una exportación de draw.io).</text>
+</svg>
