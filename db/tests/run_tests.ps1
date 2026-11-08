@@ -17,7 +17,8 @@ $migrations = @(
     '001_esquema.sql',
     '002_constraints.sql',
     '003_rn05_composicion_deferred.sql',
-    '004_rn03_rn06.sql'
+    '004_rn03_rn06.sql',
+    '005_rn08_comprobante.sql'
 )
 
 $okFiles = Get-ChildItem $PSScriptRoot -Filter '*.ok.sql' |
@@ -161,7 +162,7 @@ if ($okFiles.Count -eq 0) {
     throw "No se encontraron pruebas positivas."
 }
 
-if ($migrations.Count -ne 4) {
+if ($migrations.Count -ne 5) {
     throw "La lista de migraciones no es la esperada."
 }
 

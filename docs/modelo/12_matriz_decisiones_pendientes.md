@@ -315,25 +315,33 @@ OBS-12→DEC-22 · OBS-13→DEC-23 · OBS-14→DEC-24.
 - **¿Decidible?:** Sí (equipo; nada que decidir).
 - **Estado:** PENDIENTE DE DECISIÓN (de confirmación administrativa, no de diseño).
 
-### DEC-23 - Q-05 y guardar vs calcular importes (OBS-13, media; R-5, RN-08)
-- **Tema:** (a) dominio de `descuento` del renglón/cabecera (¿porcentaje o importe?); (b) ¿se
-  almacenan subtotal/descuento/total o se calculan?
-- **Documentos:** A-02 §2.19/§2.20/§3 (R-5), A-09 §3.19/§3.20/§12.15, A-10 §2.19/§2.20, A-11 OBS-13.
-- **Evidencia:** sec. 5 («decisiones de diseño» exige justificar por escrito); RN-08 («No se carga a
-  mano»); `fn_total_comprobante` (etapa 2).
-- **Alternativa A:** importes almacenados, recalculados/validados por trigger. Ventajas: tracking
-  histórico, auditable; RN-08 ya pedida como trigger. Desventajas: precisión/mantenimiento de
-  igualdad (el negocio no lo carga a mano).
-- **Alternativa B:** solo almacenar precio_unitario y cantidad; totales calculados en consulta/vista.
-  Ventajas: sin riesgo de divergencia. Desventajas: «descuento» histórico por renglón y «total» por
-  cabecera tienen que recompute-er; la sec. 5 lo admite pero exige defensa de consistencia.
-- **Consecuencias:** DDL (columnas y tipos), triggers RN-08/09, consultas U1/S8.
-- **Recomendación técnica:** A (histórico consistente con `precio_unitario` histórico ya almacenado),
-  con trigger de cálculo; tomar (a) dominio: **porcentaje** para descuento del renglón (coherente con
-  RN-06, «directamente relacionado al tipo de cliente»), enviado a revisión.
-- **¿Decidible?:** No en su totalidad - la sec. 5 exige justificar por escrito al equipo, y Q-05
-  conviene validar con docente.
-- **Estado:** PENDIENTE DE DECISIÓN.
+### DEC-23 - Dominio de descuentos y almacenamiento de importes (OBS-13, R-5, RN-08)
+
+- **Tema:** dominio del descuento y almacenamiento de los importes derivados.
+- **Decisiones adoptadas:**
+  1. Se adopta la alternativa A: los importes derivados se almacenan y PostgreSQL
+     los recalcula automáticamente mediante funciones y triggers.
+  2. `Renglon_Comprobante.descuento` es un porcentaje (`NUMERIC(5,2)`), obtenido
+     de `Cliente.descuento` al crear el renglón. Se conserva como valor histórico.
+  3. `Renglon_Comprobante.subtotal` es el importe neto del renglón:
+     cantidad × precio_unitario menos el descuento monetario aplicado,
+     redondeado a dos decimales por renglón.
+  4. `Comprobante.subtotal` es la suma de los importes brutos de los renglones.
+  5. `Comprobante.descuento` es la suma de los descuentos monetarios aplicados,
+     redondeados individualmente a dos decimales.
+  6. `Comprobante.total` es la suma de los subtotales netos de los renglones.
+  7. Los importes derivados no se aceptan como valores manuales de la API/front.
+
+- **Fundamento:** el porcentaje se obtiene de RN-06 y queda congelado en cada
+  renglón para preservar el histórico. El cálculo por renglón evita diferencias
+  de redondeo al sumar comprobantes.
+
+- **Implementación:** migración `005_rn08_comprobante.sql`, función
+  `fn_total_comprobante` y triggers de cálculo y protección de importes.
+  Pruebas positivas y negativas incorporadas al runner.
+
+- **Estado:** **ADOPTADA E IMPLEMENTADA** — RN-08 (A-24/#30); suite completa:
+  20 casos aprobados, 0 fallidos.
 
 ### DEC-24 - Acciones referenciales ON DELETE y ON UPDATE (OBS-14)
 
