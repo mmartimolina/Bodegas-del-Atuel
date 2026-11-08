@@ -1,4 +1,3 @@
-
 # run_bench.ps1
 # Issues #44 / #46: compara consultas antes y despues de la migracion 013.
 # Utiliza exclusivamente la base temporal rn_bench_tmp.
@@ -18,15 +17,45 @@ $outdir = Join-Path $PSScriptRoot 'bench_resultados'
 $antes = Join-Path $outdir 'bench_antes.txt'
 $despues = Join-Path $outdir 'bench_despues.txt'
 
+# Conexion por TCP al servidor PostgreSQL del contenedor (mapeado en localhost).
+$projectRoot = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
+$envFile = Join-Path $projectRoot '.env'
+$pgUser = $dbUser
+
+foreach ($line in (Get-Content $envFile)) {
+    if ($line -match '^POSTGRES_(PASSWORD|PORT)=(.*)$') {
+        Set-Variable -Name ("pg" + $Matches[1]) -Value $Matches[2]
+    }
+}
+
+if (-not $pgPORT) { $pgPORT = 5433 }
+if ($pgPASSWORD) { $env:PGPASSWORD = $pgPASSWORD }
+
+$psql = @(
+    (Get-Command psql -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source),
+    'C:\Program Files\PostgreSQL\18\bin\psql.exe'
+) | Where-Object { $_ -and (Test-Path $_) } | Select-Object -First 1
+
+if (-not $psql) {
+    throw 'No se encontro el cliente psql.'
+}
 
 function Invoke-Docker {
     param([string[]]$Arguments)
 
-    $output = @(& docker @Arguments)
-    $exitCode = $LASTEXITCODE
+    # Comandos psql directos al servidor (la palabra clave -c o -f se conserva).
+    $oldEAP = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
+    try {
+        $output = @(& $psql -X -h localhost -p $pgPORT @Arguments 2>&1)
+        $exitCode = $LASTEXITCODE
+    }
+    finally {
+        $ErrorActionPreference = $oldEAP
+    }
 
     if ($exitCode -ne 0) {
-        throw "Fallo docker (codigo $exitCode): $($output -join "`n")"
+        throw "Fallo psql (codigo $exitCode): $($output -join "`n")"
     }
 
     return $output
@@ -42,24 +71,12 @@ function Invoke-PsqlFile {
         throw "No existe el archivo SQL: $LocalPath"
     }
 
-    $remotePath = "/tmp/$RemoteName"
-
-    Invoke-Docker @(
-        'cp',
-        $LocalPath,
-        "${container}:$remotePath"
-    ) | Out-Null
-
     $output = Invoke-Docker @(
-        'exec',
-        $container,
-        'psql',
-        '-X',
         '-U', $dbUser,
         '-d', $base,
         '-v', 'ON_ERROR_STOP=1',
         '-q',
-        '-f', $remotePath
+        '-f', $LocalPath
     )
 
     return $output
@@ -91,16 +108,15 @@ function Invoke-Consultas {
 
 if ($SoloLimpia) {
     $exists = Invoke-Docker @(
-    'exec', $container,
-    'psql', '-X', '-U', $dbUser,
+    '-U', $dbUser,
     '-d', 'postgres', '-tAc',
     "SELECT 1 FROM pg_database WHERE datname = '$base';"
 )
 
 if (($exists -join '').Trim() -eq '1') {
     Invoke-Docker @(
-        'exec', $container,
-        'dropdb', '-U', $dbUser, $base
+        '-U', $dbUser,
+        '-c', "DROP DATABASE $base;"
     ) | Out-Null
 }
 
@@ -109,14 +125,10 @@ if (($exists -join '').Trim() -eq '1') {
 }
 
 # Verificaciones previas.
-$running = Invoke-Docker @(
-    'inspect',
-    '-f', '{{.State.Running}}',
-    $container
-)
+& $psql -X -h localhost -p $pgPORT -U $dbUser -d postgres -q -tAc 'SELECT 1;' | Out-Null
 
-if (($running -join '').Trim() -ne 'true') {
-    throw "El contenedor $container no esta en ejecucion."
+if ($LASTEXITCODE -ne 0) {
+    throw 'El servidor PostgreSQL no esta disponible.'
 }
 
 if ($base -eq 'bodegas_atuel') {
@@ -142,19 +154,14 @@ if ($migrations.Count -lt 5) {
 try {
     Write-Host "`nCreando base temporal $base..." -ForegroundColor Cyan
 
-    Invoke-Docker @(
-        'exec', $container,
-        'dropdb', '--if-exists',
-        '-U', $dbUser, $base
-    ) | Out-Null
+    & $psql -X -h localhost -p $pgPORT -U $dbUser -d postgres -q `
+        -v ON_ERROR_STOP=1 `
+        -c "DROP DATABASE IF EXISTS $base;" `
+        -c "CREATE DATABASE $base OWNER $dbUser;" | Out-Null
 
-    Invoke-Docker @(
-        'exec', $container,
-        'createdb',
-        '-U', $dbUser,
-        '-O', $dbUser,
-        $base
-    ) | Out-Null
+    if ($LASTEXITCODE -ne 0) {
+        throw 'No se pudo crear la base temporal.'
+    }
 
     # 1. Migraciones sin indices.
     foreach ($migration in $migrations) {
@@ -191,8 +198,6 @@ SELECT
     Write-Host "`nActualizando estadisticas antes de medir..." -ForegroundColor Cyan
 
     Invoke-Docker @(
-        'exec', $container,
-        'psql', '-X',
         '-U', $dbUser,
         '-d', $base,
         '-v', 'ON_ERROR_STOP=1',
@@ -210,8 +215,6 @@ SELECT
     Write-Host "`nActualizando estadisticas despues de crear indices..." -ForegroundColor Cyan
 
     Invoke-Docker @(
-        'exec', $container,
-        'psql', '-X',
         '-U', $dbUser,
         '-d', $base,
         '-v', 'ON_ERROR_STOP=1',
@@ -229,11 +232,9 @@ SELECT
 finally {
     Write-Host "`nEliminando base temporal..." -ForegroundColor Yellow
 
-    Invoke-Docker @(
-        'exec', $container,
-        'dropdb', '--if-exists',
-        '-U', $dbUser, $base
-    ) | Out-Null
+    & $psql -X -h localhost -p $pgPORT -U $dbUser -d postgres -q `
+        -v ON_ERROR_STOP=1 `
+        -c "DROP DATABASE IF EXISTS $base;" | Out-Null
 
     Write-Host 'Finalizado: la base temporal fue eliminada.' -ForegroundColor Green
 }

@@ -1,0 +1,32 @@
+﻿# Medicion de costo de escritura (issue #46 / A-40)
+Fecha de ejecucion : 2026-11-08 10:04:41
+Entorno: PostgreSQL 16 en contenedor bodegas-atuel-db (local, localhost).
+Datos: 01_carga_sintetica.sql (mismos datos sinteticos en ambas bases).
+
+Mediciones
+  Carga SIN indices 013            : 43,29 s  (base idx_wcost_noidx_tmp)
+  Creacion de indices sobre datos  : 1,15 s  (migracion 013 despues de la carga)
+  Carga CON indices 013            : 51,13 s  (base idx_wcost_idx_tmp, 013 aplicado antes de cargar)
+  Delta de la carga (con - sin)    : 7,83 s
+
+Verificacion de conteos identicos en ambas bases
+ vinos | renglones | stock  
+-------+-----------+--------
+ 20000 |     60000 | 100000
+(1 row)
+
+  ---
+ vinos | renglones | stock  
+-------+-----------+--------
+ 20000 |     60000 | 100000
+(1 row)
+
+
+Limitaciones
+  - Unica repeticion por escenario; el tiempo de carga no se promedio.
+  - Ambas cargas corren secuencialmente: la segunda puede encontrar
+    registros cacheados en el servidor.
+  - La carga usa INSERT (generados en SQL): no mide COPY u otras
+    estrategias de carga masiva.
+  - No mide UPDATE/DELETE: solo INSERT (carga ascendente e inicial).
+

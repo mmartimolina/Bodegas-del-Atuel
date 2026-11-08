@@ -1,157 +1,157 @@
 ﻿                                                                       QUERY PLAN                                                                       
 --------------------------------------------------------------------------------------------------------------------------------------------------------
- Nested Loop Left Join  (cost=0.57..2448.66 rows=1 width=12) (actual time=20.125..20.134 rows=1 loops=1)
+ Nested Loop Left Join  (cost=0.57..2448.66 rows=1 width=12) (actual time=23.638..23.647 rows=1 loops=1)
    Buffers: shared hit=1189
-   ->  Nested Loop Left Join  (cost=0.57..16.62 rows=1 width=17) (actual time=0.102..0.110 rows=1 loops=1)
+   ->  Nested Loop Left Join  (cost=0.57..16.62 rows=1 width=17) (actual time=0.099..0.106 rows=1 loops=1)
          Buffers: shared hit=7
-         ->  Index Only Scan using "Vino_pkey" on "Vino" v  (cost=0.29..8.30 rows=1 width=13) (actual time=0.071..0.077 rows=1 loops=1)
+         ->  Index Only Scan using "Vino_pkey" on "Vino" v  (cost=0.29..8.30 rows=1 width=13) (actual time=0.063..0.069 rows=1 loops=1)
                Index Cond: (codigo = 'BENCH-004997'::text)
                Heap Fetches: 2
                Buffers: shared hit=4
-         ->  Index Scan using "Stock_Deposito_pkey" on "Stock_Deposito" dp  (cost=0.29..8.30 rows=1 width=17) (actual time=0.029..0.029 rows=1 loops=1)
+         ->  Index Scan using "Stock_Deposito_pkey" on "Stock_Deposito" dp  (cost=0.29..8.30 rows=1 width=17) (actual time=0.034..0.034 rows=1 loops=1)
                Index Cond: (vino = 'BENCH-004997'::text)
                Buffers: shared hit=3
-   ->  GroupAggregate  (cost=0.00..2432.02 rows=1 width=21) (actual time=20.019..20.020 rows=1 loops=1)
+   ->  GroupAggregate  (cost=0.00..2432.02 rows=1 width=21) (actual time=23.536..23.536 rows=1 loops=1)
          Buffers: shared hit=1182
-         ->  Seq Scan on "Stock_Sala"  (cost=0.00..2432.00 rows=5 width=17) (actual time=2.871..20.010 rows=5 loops=1)
+         ->  Seq Scan on "Stock_Sala"  (cost=0.00..2432.00 rows=5 width=17) (actual time=2.981..23.524 rows=5 loops=1)
                Filter: (vino = 'BENCH-004997'::text)
                Rows Removed by Filter: 99995
                Buffers: shared hit=1182
  Planning:
-   Buffers: shared hit=261
- Planning Time: 1.153 ms
- Execution Time: 20.278 ms
+   Buffers: shared hit=263
+ Planning Time: 1.235 ms
+ Execution Time: 23.783 ms
 (21 rows)
 
                                                             QUERY PLAN                                                             
 -----------------------------------------------------------------------------------------------------------------------------------
- Aggregate  (cost=177.46..177.47 rows=1 width=8) (actual time=1.881..1.883 rows=1 loops=1)
+ Aggregate  (cost=177.46..177.47 rows=1 width=8) (actual time=1.150..1.151 rows=1 loops=1)
    Buffers: shared hit=83
-   ->  Append  (cost=0.00..174.68 rows=1112 width=0) (actual time=0.322..1.703 rows=1667 loops=1)
+   ->  Append  (cost=0.00..174.68 rows=1112 width=0) (actual time=0.156..1.042 rows=1667 loops=1)
          Buffers: shared hit=83
-         ->  Subquery Scan on "*SELECT* 1"  (cost=0.00..108.67 rows=667 width=0) (actual time=0.321..1.066 rows=1000 loops=1)
+         ->  Subquery Scan on "*SELECT* 1"  (cost=0.00..108.67 rows=667 width=0) (actual time=0.155..0.573 rows=1000 loops=1)
                Buffers: shared hit=57
-               ->  Seq Scan on "Ingreso" i  (cost=0.00..102.00 rows=667 width=72) (actual time=0.320..0.836 rows=1000 loops=1)
+               ->  Seq Scan on "Ingreso" i  (cost=0.00..102.00 rows=667 width=72) (actual time=0.155..0.469 rows=1000 loops=1)
                      Filter: ((estado <> 'procesado'::estado_documento) AND (estado = 'terminado'::estado_documento))
                      Rows Removed by Filter: 2000
                      Buffers: shared hit=57
-         ->  Subquery Scan on "*SELECT* 2"  (cost=0.00..60.45 rows=445 width=0) (actual time=0.093..0.416 rows=667 loops=1)
+         ->  Subquery Scan on "*SELECT* 2"  (cost=0.00..60.45 rows=445 width=0) (actual time=0.087..0.330 rows=667 loops=1)
                Buffers: shared hit=26
-               ->  Seq Scan on "Transferencia" t  (cost=0.00..56.00 rows=445 width=72) (actual time=0.093..0.337 rows=667 loops=1)
+               ->  Seq Scan on "Transferencia" t  (cost=0.00..56.00 rows=445 width=72) (actual time=0.086..0.261 rows=667 loops=1)
                      Filter: ((estado <> 'procesado'::estado_documento) AND (estado = 'terminado'::estado_documento))
                      Rows Removed by Filter: 1333
                      Buffers: shared hit=26
  Planning:
-   Buffers: shared hit=59
- Planning Time: 3.822 ms
- Execution Time: 1.949 ms
+   Buffers: shared hit=61
+ Planning Time: 0.564 ms
+ Execution Time: 1.183 ms
 (20 rows)
 
                                                       QUERY PLAN                                                       
 -----------------------------------------------------------------------------------------------------------------------
- Limit  (cost=121.11..121.16 rows=20 width=18) (actual time=1.264..1.271 rows=20 loops=1)
+ Limit  (cost=121.11..121.16 rows=20 width=18) (actual time=0.798..0.802 rows=20 loops=1)
    Buffers: shared hit=60
-   ->  Sort  (cost=121.11..123.61 rows=1000 width=18) (actual time=1.263..1.265 rows=20 loops=1)
+   ->  Sort  (cost=121.11..123.61 rows=1000 width=18) (actual time=0.796..0.798 rows=20 loops=1)
          Sort Key: fecha DESC
          Sort Method: top-N heapsort  Memory: 27kB
          Buffers: shared hit=60
-         ->  Seq Scan on "Ingreso"  (cost=0.00..94.50 rows=1000 width=18) (actual time=0.196..0.760 rows=1000 loops=1)
+         ->  Seq Scan on "Ingreso"  (cost=0.00..94.50 rows=1000 width=18) (actual time=0.107..0.356 rows=1000 loops=1)
                Filter: (estado = 'terminado'::estado_documento)
                Rows Removed by Filter: 2000
                Buffers: shared hit=57
  Planning:
-   Buffers: shared hit=17
- Planning Time: 0.175 ms
- Execution Time: 1.287 ms
+   Buffers: shared hit=21
+ Planning Time: 0.091 ms
+ Execution Time: 0.814 ms
 (14 rows)
 
                                                         QUERY PLAN                                                         
 ---------------------------------------------------------------------------------------------------------------------------
- Limit  (cost=478.01..478.01 rows=1 width=20) (actual time=5.272..5.274 rows=1 loops=1)
+ Limit  (cost=478.01..478.01 rows=1 width=20) (actual time=3.174..3.176 rows=1 loops=1)
    Buffers: shared hit=231
-   ->  Sort  (cost=478.01..478.01 rows=1 width=20) (actual time=5.271..5.271 rows=1 loops=1)
+   ->  Sort  (cost=478.01..478.01 rows=1 width=20) (actual time=3.173..3.174 rows=1 loops=1)
          Sort Key: fecha_hora DESC
          Sort Method: quicksort  Memory: 25kB
          Buffers: shared hit=231
-         ->  Seq Scan on "Auditoria_Precio"  (cost=0.00..478.00 rows=1 width=20) (actual time=0.038..5.256 rows=1 loops=1)
+         ->  Seq Scan on "Auditoria_Precio"  (cost=0.00..478.00 rows=1 width=20) (actual time=0.029..3.163 rows=1 loops=1)
                Filter: (vino = 'BENCH-000123'::text)
                Rows Removed by Filter: 19999
                Buffers: shared hit=228
  Planning:
    Buffers: shared hit=56
- Planning Time: 0.324 ms
- Execution Time: 5.292 ms
+ Planning Time: 0.180 ms
+ Execution Time: 3.188 ms
 (14 rows)
 
                                                                QUERY PLAN                                                                
 -----------------------------------------------------------------------------------------------------------------------------------------
- Aggregate  (cost=2161.76..2161.77 rows=1 width=40) (actual time=14.836..14.839 rows=1 loops=1)
+ Aggregate  (cost=2161.76..2161.77 rows=1 width=40) (actual time=19.923..19.927 rows=1 loops=1)
    Buffers: shared hit=1313
-   ->  Hash Join  (cost=840.12..2158.76 rows=600 width=6) (actual time=1.661..14.700 rows=672 loops=1)
+   ->  Hash Join  (cost=840.12..2158.76 rows=600 width=6) (actual time=1.526..19.731 rows=672 loops=1)
          Hash Cond: (r.comprobante = c.numero)
          Buffers: shared hit=1313
-         ->  Seq Scan on "Renglon_Comprobante" r  (cost=0.00..1161.00 rows=60000 width=14) (actual time=0.008..6.276 rows=60000 loops=1)
+         ->  Seq Scan on "Renglon_Comprobante" r  (cost=0.00..1161.00 rows=60000 width=14) (actual time=0.007..8.798 rows=60000 loops=1)
                Buffers: shared hit=561
-         ->  Hash  (cost=839.50..839.50 rows=50 width=8) (actual time=1.558..1.559 rows=56 loops=1)
+         ->  Hash  (cost=839.50..839.50 rows=50 width=8) (actual time=1.423..1.424 rows=56 loops=1)
                Buckets: 1024  Batches: 1  Memory Usage: 11kB
                Buffers: shared hit=752
-               ->  Seq Scan on "Comprobante" c  (cost=0.00..839.50 rows=50 width=8) (actual time=0.955..1.543 rows=56 loops=1)
+               ->  Seq Scan on "Comprobante" c  (cost=0.00..839.50 rows=50 width=8) (actual time=0.867..1.406 rows=56 loops=1)
                      Filter: ((fecha >= '2026-03-01'::date) AND (fecha <= '2026-03-31'::date) AND (sala = 990012))
                      Rows Removed by Filter: 4944
                      Buffers: shared hit=752
  Planning:
-   Buffers: shared hit=192
- Planning Time: 0.888 ms
- Execution Time: 14.870 ms
+   Buffers: shared hit=196
+ Planning Time: 0.665 ms
+ Execution Time: 19.960 ms
 (18 rows)
 
                                                 QUERY PLAN                                                
 ----------------------------------------------------------------------------------------------------------
- Seq Scan on "Stock_Sala"  (cost=0.00..2432.00 rows=5 width=4) (actual time=0.675..23.106 rows=5 loops=1)
+ Seq Scan on "Stock_Sala"  (cost=0.00..2432.00 rows=5 width=4) (actual time=0.727..13.900 rows=5 loops=1)
    Filter: (vino = 'BENCH-002222'::text)
    Rows Removed by Filter: 99995
    Buffers: shared hit=1182
  Planning:
    Buffers: shared hit=78
- Planning Time: 0.400 ms
- Execution Time: 23.160 ms
+ Planning Time: 0.387 ms
+ Execution Time: 13.953 ms
 (8 rows)
 
                                                                    QUERY PLAN                                                                    
 -------------------------------------------------------------------------------------------------------------------------------------------------
- Aggregate  (cost=280.74..280.75 rows=1 width=8) (actual time=3.326..3.327 rows=1 loops=1)
+ Aggregate  (cost=280.74..280.75 rows=1 width=8) (actual time=1.780..1.781 rows=1 loops=1)
    Buffers: shared hit=1631
-   ->  Merge Join  (cost=63.75..280.51 rows=91 width=4) (actual time=2.934..3.307 rows=100 loops=1)
+   ->  Merge Join  (cost=63.75..280.51 rows=91 width=4) (actual time=1.561..1.768 rows=100 loops=1)
          Merge Cond: (v.codigo = r.vino)
          Buffers: shared hit=1631
-         ->  Index Only Scan using "Vino_pkey" on "Vino" v  (cost=0.29..1386.29 rows=20000 width=13) (actual time=0.036..1.391 rows=800 loops=1)
+         ->  Index Only Scan using "Vino_pkey" on "Vino" v  (cost=0.29..1386.29 rows=20000 width=13) (actual time=0.014..0.764 rows=800 loops=1)
                Heap Fetches: 1600
                Buffers: shared hit=1608
-         ->  Sort  (cost=63.46..63.69 rows=91 width=17) (actual time=1.087..1.099 rows=100 loops=1)
+         ->  Sort  (cost=63.46..63.69 rows=91 width=17) (actual time=0.601..0.608 rows=100 loops=1)
                Sort Key: r.vino
                Sort Method: quicksort  Memory: 29kB
                Buffers: shared hit=23
-               ->  Seq Scan on "Renglon_Ingreso" r  (cost=0.00..60.50 rows=91 width=17) (actual time=0.227..0.932 rows=100 loops=1)
+               ->  Seq Scan on "Renglon_Ingreso" r  (cost=0.00..60.50 rows=91 width=17) (actual time=0.182..0.538 rows=100 loops=1)
                      Filter: (vino ~~ 'BENCH-0007%'::text)
                      Rows Removed by Filter: 2900
                      Buffers: shared hit=23
  Planning:
    Buffers: shared hit=202
- Planning Time: 1.684 ms
- Execution Time: 3.559 ms
+ Planning Time: 1.344 ms
+ Execution Time: 1.873 ms
 (20 rows)
 
                                                         QUERY PLAN                                                        
 --------------------------------------------------------------------------------------------------------------------------
- Aggregate  (cost=1311.01..1311.02 rows=1 width=8) (actual time=7.613..7.614 rows=1 loops=1)
+ Aggregate  (cost=1311.01..1311.02 rows=1 width=8) (actual time=9.410..9.412 rows=1 loops=1)
    Buffers: shared hit=561
-   ->  Seq Scan on "Renglon_Comprobante" r  (cost=0.00..1311.00 rows=3 width=0) (actual time=1.021..7.606 rows=3 loops=1)
+   ->  Seq Scan on "Renglon_Comprobante" r  (cost=0.00..1311.00 rows=3 width=0) (actual time=1.473..9.400 rows=3 loops=1)
          Filter: (vino = 'BENCH-009999'::text)
          Rows Removed by Filter: 59997
          Buffers: shared hit=561
  Planning:
    Buffers: shared hit=28
- Planning Time: 0.352 ms
- Execution Time: 7.654 ms
+ Planning Time: 0.400 ms
+ Execution Time: 9.458 ms
 (10 rows)
 
