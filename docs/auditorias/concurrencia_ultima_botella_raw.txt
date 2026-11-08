@@ -1,0 +1,271 @@
+﻿FASE 1: CON SELECT ... FOR UPDATE (mecanismo RN-09, esquema productivo)
+--- SESION A (venta con bloqueo) ---
+          a_inicio_tx          
+-------------------------------
+ 2026-11-08 13:11:36.771188+00
+(1 row)
+
+BEGIN
+Timing is on.
+INSERT 0 1
+Time: 17,942 ms
+Timing is off.
+ a_venta_registrada_mantengo_tx 
+--------------------------------
+ 2026-11-08 13:11:36.79217+00
+(1 row)
+
+ pg_sleep 
+----------
+ 
+(1 row)
+
+      a_antes_del_commit       
+-------------------------------
+ 2026-11-08 13:11:42.802094+00
+(1 row)
+
+COMMIT
+        a_commit_hecho         
+-------------------------------
+ 2026-11-08 13:11:42.805693+00
+(1 row)
+
+                                           resultado                                            
+------------------------------------------------------------------------------------------------
+ SESION A: venta confirmada; la fila de stock quedo bloqueada por FOR UPDATE hasta este COMMIT.
+(1 row)
+
+
+--- SESION B (venta concurrente con bloqueo) ---
+          b_inicio_tx          
+-------------------------------
+ 2026-11-08 13:11:38.803933+00
+(1 row)
+
+BEGIN
+Timing is on.
+Time: 4004,648 ms (00:04,005)
+psql:D:/Bodegas-del-Atuel/db/concurrency/a37_sesion_b.sql:15: ERROR:  RN-09: stock insuficiente en la sala 777701 para el vino A37-V1 (disponible: 0, requerido: 1)
+CONTEXT:  PL/pgSQL function fn_rn09_consumir_stock(bigint,text,integer) line 21 at RAISE
+SQL statement "SELECT fn_rn09_consumir_stock(v_sala_nueva, v_vino_nuevo, NEW.cantidad)"
+PL/pgSQL function fn_renglon_comprobante_aplicar_stock() line 40 at PERFORM
+
+Monitoreo pg_stat_activity (sesiones concurrentes):
+                                                                  ?column?                                                                  
+--------------------------------------------------------------------------------------------------------------------------------------------
+ 13:11:38 | Timeout | PgSleep | bodegas_app | SELECT pg_sleep(6);
+ 13:11:38 | Lock | transactionid | bodegas_app | INSERT INTO "Renglon_Comprobante"(comprobante, vino, cantidad, precio_unitario) VALUES (77
+(2 rows)
+
+                                                                  ?column?                                                                  
+--------------------------------------------------------------------------------------------------------------------------------------------
+ 13:11:39 | Timeout | PgSleep | bodegas_app | SELECT pg_sleep(6);
+ 13:11:39 | Lock | transactionid | bodegas_app | INSERT INTO "Renglon_Comprobante"(comprobante, vino, cantidad, precio_unitario) VALUES (77
+(2 rows)
+
+                                                                  ?column?                                                                  
+--------------------------------------------------------------------------------------------------------------------------------------------
+ 13:11:40 | Timeout | PgSleep | bodegas_app | SELECT pg_sleep(6);
+ 13:11:40 | Lock | transactionid | bodegas_app | INSERT INTO "Renglon_Comprobante"(comprobante, vino, cantidad, precio_unitario) VALUES (77
+(2 rows)
+
+                                                                  ?column?                                                                  
+--------------------------------------------------------------------------------------------------------------------------------------------
+ 13:11:41 | Timeout | PgSleep | bodegas_app | SELECT pg_sleep(6);
+ 13:11:41 | Lock | transactionid | bodegas_app | INSERT INTO "Renglon_Comprobante"(comprobante, vino, cantidad, precio_unitario) VALUES (77
+(2 rows)
+
+                                                                  ?column?                                                                  
+--------------------------------------------------------------------------------------------------------------------------------------------
+ 13:11:41 | Timeout | PgSleep | bodegas_app | SELECT pg_sleep(6);
+ 13:11:41 | Lock | transactionid | bodegas_app | INSERT INTO "Renglon_Comprobante"(comprobante, vino, cantidad, precio_unitario) VALUES (77
+(2 rows)
+
+                                                                  ?column?                                                                  
+--------------------------------------------------------------------------------------------------------------------------------------------
+ 13:11:42 | Timeout | PgSleep | bodegas_app | SELECT pg_sleep(6);
+ 13:11:42 | Lock | transactionid | bodegas_app | INSERT INTO "Renglon_Comprobante"(comprobante, vino, cantidad, precio_unitario) VALUES (77
+(2 rows)
+
+ ?column? 
+----------
+(0 rows)
+
+ ?column? 
+----------
+(0 rows)
+
+ ?column? 
+----------
+(0 rows)
+
+ ?column? 
+----------
+(0 rows)
+
+ ?column? 
+----------
+(0 rows)
+
+ ?column? 
+----------
+(0 rows)
+
+ ?column? 
+----------
+(0 rows)
+
+Estado final:
+                        estado_final                        
+------------------------------------------------------------
+ stock final = 0, renglones de A37-V1 en el comprobante = 1
+(1 row)
+
+
+FASE 2: SIN SELECT ... FOR UPDATE (UPDATE directos, CHECK retirado en la base temporal)
+--- SESION A (venta SIN bloqueo) ---
+          a_inicio_tx          
+-------------------------------
+ 2026-11-08 13:11:51.276581+00
+(1 row)
+
+BEGIN
+Timing is on.
+UPDATE 1
+Time: 2,168 ms
+Timing is off.
+ a_stock_en_mi_tx 
+------------------
+                0
+(1 row)
+
+ a_venta_aplicada_mantengo_tx  
+-------------------------------
+ 2026-11-08 13:11:51.287335+00
+(1 row)
+
+ pg_sleep 
+----------
+ 
+(1 row)
+
+      a_antes_del_commit       
+-------------------------------
+ 2026-11-08 13:11:57.294573+00
+(1 row)
+
+COMMIT
+        a_commit_hecho         
+-------------------------------
+ 2026-11-08 13:11:57.301731+00
+(1 row)
+
+                                resultado                                
+-------------------------------------------------------------------------
+ SESION A: venta sin bloqueo confirmada (sin RN-09, con CHECK retirado).
+(1 row)
+
+
+--- SESION B (venta concurrente SIN bloqueo) ---
+          b_inicio_tx          
+-------------------------------
+ 2026-11-08 13:11:53.293285+00
+(1 row)
+
+BEGIN
+     b_valida_stock_antes      
+-------------------------------
+ 2026-11-08 13:11:53.297178+00
+(1 row)
+
+         b_stock_leido          
+--------------------------------
+ stock leido por la sesion B: 1
+(1 row)
+
+Timing is on.
+UPDATE 1
+Time: 3996,289 ms (00:03,996)
+Timing is off.
+COMMIT
+        b_commit_hecho         
+-------------------------------
+ 2026-11-08 13:11:57.310434+00
+(1 row)
+
+                             resultado                             
+-------------------------------------------------------------------
+ SESION B: la actualizacion se aplico tras esperar el COMMIT de A.
+(1 row)
+
+
+Monitoreo pg_stat_activity (sesiones concurrentes):
+                                                                 ?column?                                                                 
+------------------------------------------------------------------------------------------------------------------------------------------
+ 13:11:53 | Timeout | PgSleep | bodegas_app | SELECT pg_sleep(6);
+ 13:11:53 | Lock | transactionid | bodegas_app | UPDATE "Stock_Sala" SET cantidad = cantidad - 1 WHERE sala = 777701 AND vino = 'A37-V1';
+(2 rows)
+
+                                                                 ?column?                                                                 
+------------------------------------------------------------------------------------------------------------------------------------------
+ 13:11:54 | Timeout | PgSleep | bodegas_app | SELECT pg_sleep(6);
+ 13:11:54 | Lock | transactionid | bodegas_app | UPDATE "Stock_Sala" SET cantidad = cantidad - 1 WHERE sala = 777701 AND vino = 'A37-V1';
+(2 rows)
+
+                                                                 ?column?                                                                 
+------------------------------------------------------------------------------------------------------------------------------------------
+ 13:11:54 | Timeout | PgSleep | bodegas_app | SELECT pg_sleep(6);
+ 13:11:54 | Lock | transactionid | bodegas_app | UPDATE "Stock_Sala" SET cantidad = cantidad - 1 WHERE sala = 777701 AND vino = 'A37-V1';
+(2 rows)
+
+                                                                 ?column?                                                                 
+------------------------------------------------------------------------------------------------------------------------------------------
+ 13:11:55 | Timeout | PgSleep | bodegas_app | SELECT pg_sleep(6);
+ 13:11:55 | Lock | transactionid | bodegas_app | UPDATE "Stock_Sala" SET cantidad = cantidad - 1 WHERE sala = 777701 AND vino = 'A37-V1';
+(2 rows)
+
+                                                                 ?column?                                                                 
+------------------------------------------------------------------------------------------------------------------------------------------
+ 13:11:56 | Timeout | PgSleep | bodegas_app | SELECT pg_sleep(6);
+ 13:11:56 | Lock | transactionid | bodegas_app | UPDATE "Stock_Sala" SET cantidad = cantidad - 1 WHERE sala = 777701 AND vino = 'A37-V1';
+(2 rows)
+
+ ?column? 
+----------
+(0 rows)
+
+ ?column? 
+----------
+(0 rows)
+
+ ?column? 
+----------
+(0 rows)
+
+ ?column? 
+----------
+(0 rows)
+
+ ?column? 
+----------
+(0 rows)
+
+ ?column? 
+----------
+(0 rows)
+
+ ?column? 
+----------
+(0 rows)
+
+ ?column? 
+----------
+(0 rows)
+
+Estado final:
+                        estado_final                         
+-------------------------------------------------------------
+ stock final = -1, renglones de A37-V1 en el comprobante = 0
+(1 row)
+

@@ -1,0 +1,4 @@
+psql:D:/Bodegas-del-Atuel/db/concurrency/a37_sesion_b.sql:15: ERROR:  RN-09: stock insuficiente en la sala 777701 para el vino A37-V1 (disponible: 0, requerido: 1)
+CONTEXT:  PL/pgSQL function fn_rn09_consumir_stock(bigint,text,integer) line 21 at RAISE
+SQL statement "SELECT fn_rn09_consumir_stock(v_sala_nueva, v_vino_nuevo, NEW.cantidad)"
+PL/pgSQL function fn_renglon_comprobante_aplicar_stock() line 40 at PERFORM

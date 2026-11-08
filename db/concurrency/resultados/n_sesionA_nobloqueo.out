@@ -1,0 +1,42 @@
+--- SESION A (venta SIN bloqueo) ---
+          a_inicio_tx          
+-------------------------------
+ 2026-11-08 13:11:51.276581+00
+(1 row)
+
+BEGIN
+Timing is on.
+UPDATE 1
+Time: 2,168 ms
+Timing is off.
+ a_stock_en_mi_tx 
+------------------
+                0
+(1 row)
+
+ a_venta_aplicada_mantengo_tx  
+-------------------------------
+ 2026-11-08 13:11:51.287335+00
+(1 row)
+
+ pg_sleep 
+----------
+ 
+(1 row)
+
+      a_antes_del_commit       
+-------------------------------
+ 2026-11-08 13:11:57.294573+00
+(1 row)
+
+COMMIT
+        a_commit_hecho         
+-------------------------------
+ 2026-11-08 13:11:57.301731+00
+(1 row)
+
+                                resultado                                
+-------------------------------------------------------------------------
+ SESION A: venta sin bloqueo confirmada (sin RN-09, con CHECK retirado).
+(1 row)
+

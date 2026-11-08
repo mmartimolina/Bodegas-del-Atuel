@@ -1,0 +1,37 @@
+--- SESION A (venta con bloqueo) ---
+          a_inicio_tx          
+-------------------------------
+ 2026-11-08 13:11:36.771188+00
+(1 row)
+
+BEGIN
+Timing is on.
+INSERT 0 1
+Time: 17,942 ms
+Timing is off.
+ a_venta_registrada_mantengo_tx 
+--------------------------------
+ 2026-11-08 13:11:36.79217+00
+(1 row)
+
+ pg_sleep 
+----------
+ 
+(1 row)
+
+      a_antes_del_commit       
+-------------------------------
+ 2026-11-08 13:11:42.802094+00
+(1 row)
+
+COMMIT
+        a_commit_hecho         
+-------------------------------
+ 2026-11-08 13:11:42.805693+00
+(1 row)
+
+                                           resultado                                            
+------------------------------------------------------------------------------------------------
+ SESION A: venta confirmada; la fila de stock quedo bloqueada por FOR UPDATE hasta este COMMIT.
+(1 row)
+

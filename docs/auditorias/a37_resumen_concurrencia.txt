@@ -1,0 +1,9 @@
+La venta concurrente de la última botella se replicó el 2026-11-08 con dos
+procesos `psql` independientes sobre la base temporal
+`a37_ultima_botella_tmp` (stock inicial = 1): la segunda sesión esperó
+~4,005 s (`wait_event_type = Lock`, `wait_event = transactionid` en
+`pg_stat_activity`) y tras el COMMIT de la primera fue rechazada con
+`RN-09: stock insuficiente ... (disponible: 0, requerido: 1)`; el stock
+final quedó en 0 con un solo renglón de venta. La comparación sin bloqueo
+(base temporal `a37_ultima_botella_noblock_tmp`) terminó con
+`stock final = -1` (venta doble). Detalle: `concurrencia_ultima_botella.md`.

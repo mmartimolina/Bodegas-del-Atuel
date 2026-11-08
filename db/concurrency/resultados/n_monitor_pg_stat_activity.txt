@@ -1,0 +1,62 @@
+﻿                                                                 ?column?                                                                 
+------------------------------------------------------------------------------------------------------------------------------------------
+ 13:11:53 | Timeout | PgSleep | bodegas_app | SELECT pg_sleep(6);
+ 13:11:53 | Lock | transactionid | bodegas_app | UPDATE "Stock_Sala" SET cantidad = cantidad - 1 WHERE sala = 777701 AND vino = 'A37-V1';
+(2 rows)
+
+                                                                 ?column?                                                                 
+------------------------------------------------------------------------------------------------------------------------------------------
+ 13:11:54 | Timeout | PgSleep | bodegas_app | SELECT pg_sleep(6);
+ 13:11:54 | Lock | transactionid | bodegas_app | UPDATE "Stock_Sala" SET cantidad = cantidad - 1 WHERE sala = 777701 AND vino = 'A37-V1';
+(2 rows)
+
+                                                                 ?column?                                                                 
+------------------------------------------------------------------------------------------------------------------------------------------
+ 13:11:54 | Timeout | PgSleep | bodegas_app | SELECT pg_sleep(6);
+ 13:11:54 | Lock | transactionid | bodegas_app | UPDATE "Stock_Sala" SET cantidad = cantidad - 1 WHERE sala = 777701 AND vino = 'A37-V1';
+(2 rows)
+
+                                                                 ?column?                                                                 
+------------------------------------------------------------------------------------------------------------------------------------------
+ 13:11:55 | Timeout | PgSleep | bodegas_app | SELECT pg_sleep(6);
+ 13:11:55 | Lock | transactionid | bodegas_app | UPDATE "Stock_Sala" SET cantidad = cantidad - 1 WHERE sala = 777701 AND vino = 'A37-V1';
+(2 rows)
+
+                                                                 ?column?                                                                 
+------------------------------------------------------------------------------------------------------------------------------------------
+ 13:11:56 | Timeout | PgSleep | bodegas_app | SELECT pg_sleep(6);
+ 13:11:56 | Lock | transactionid | bodegas_app | UPDATE "Stock_Sala" SET cantidad = cantidad - 1 WHERE sala = 777701 AND vino = 'A37-V1';
+(2 rows)
+
+ ?column? 
+----------
+(0 rows)
+
+ ?column? 
+----------
+(0 rows)
+
+ ?column? 
+----------
+(0 rows)
+
+ ?column? 
+----------
+(0 rows)
+
+ ?column? 
+----------
+(0 rows)
+
+ ?column? 
+----------
+(0 rows)
+
+ ?column? 
+----------
+(0 rows)
+
+ ?column? 
+----------
+(0 rows)
+

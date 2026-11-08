@@ -1,0 +1,9 @@
+--- SESION B (venta concurrente con bloqueo) ---
+          b_inicio_tx          
+-------------------------------
+ 2026-11-08 13:11:38.803933+00
+(1 row)
+
+BEGIN
+Timing is on.
+Time: 4004,648 ms (00:04,005)

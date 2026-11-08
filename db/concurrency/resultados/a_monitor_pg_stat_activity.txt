@@ -1,0 +1,64 @@
+﻿                                                                  ?column?                                                                  
+--------------------------------------------------------------------------------------------------------------------------------------------
+ 13:11:38 | Timeout | PgSleep | bodegas_app | SELECT pg_sleep(6);
+ 13:11:38 | Lock | transactionid | bodegas_app | INSERT INTO "Renglon_Comprobante"(comprobante, vino, cantidad, precio_unitario) VALUES (77
+(2 rows)
+
+                                                                  ?column?                                                                  
+--------------------------------------------------------------------------------------------------------------------------------------------
+ 13:11:39 | Timeout | PgSleep | bodegas_app | SELECT pg_sleep(6);
+ 13:11:39 | Lock | transactionid | bodegas_app | INSERT INTO "Renglon_Comprobante"(comprobante, vino, cantidad, precio_unitario) VALUES (77
+(2 rows)
+
+                                                                  ?column?                                                                  
+--------------------------------------------------------------------------------------------------------------------------------------------
+ 13:11:40 | Timeout | PgSleep | bodegas_app | SELECT pg_sleep(6);
+ 13:11:40 | Lock | transactionid | bodegas_app | INSERT INTO "Renglon_Comprobante"(comprobante, vino, cantidad, precio_unitario) VALUES (77
+(2 rows)
+
+                                                                  ?column?                                                                  
+--------------------------------------------------------------------------------------------------------------------------------------------
+ 13:11:41 | Timeout | PgSleep | bodegas_app | SELECT pg_sleep(6);
+ 13:11:41 | Lock | transactionid | bodegas_app | INSERT INTO "Renglon_Comprobante"(comprobante, vino, cantidad, precio_unitario) VALUES (77
+(2 rows)
+
+                                                                  ?column?                                                                  
+--------------------------------------------------------------------------------------------------------------------------------------------
+ 13:11:41 | Timeout | PgSleep | bodegas_app | SELECT pg_sleep(6);
+ 13:11:41 | Lock | transactionid | bodegas_app | INSERT INTO "Renglon_Comprobante"(comprobante, vino, cantidad, precio_unitario) VALUES (77
+(2 rows)
+
+                                                                  ?column?                                                                  
+--------------------------------------------------------------------------------------------------------------------------------------------
+ 13:11:42 | Timeout | PgSleep | bodegas_app | SELECT pg_sleep(6);
+ 13:11:42 | Lock | transactionid | bodegas_app | INSERT INTO "Renglon_Comprobante"(comprobante, vino, cantidad, precio_unitario) VALUES (77
+(2 rows)
+
+ ?column? 
+----------
+(0 rows)
+
+ ?column? 
+----------
+(0 rows)
+
+ ?column? 
+----------
+(0 rows)
+
+ ?column? 
+----------
+(0 rows)
+
+ ?column? 
+----------
+(0 rows)
+
+ ?column? 
+----------
+(0 rows)
+
+ ?column? 
+----------
+(0 rows)
+

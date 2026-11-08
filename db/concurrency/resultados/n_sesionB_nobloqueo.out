@@ -1,0 +1,32 @@
+--- SESION B (venta concurrente SIN bloqueo) ---
+          b_inicio_tx          
+-------------------------------
+ 2026-11-08 13:11:53.293285+00
+(1 row)
+
+BEGIN
+     b_valida_stock_antes      
+-------------------------------
+ 2026-11-08 13:11:53.297178+00
+(1 row)
+
+         b_stock_leido          
+--------------------------------
+ stock leido por la sesion B: 1
+(1 row)
+
+Timing is on.
+UPDATE 1
+Time: 3996,289 ms (00:03,996)
+Timing is off.
+COMMIT
+        b_commit_hecho         
+-------------------------------
+ 2026-11-08 13:11:57.310434+00
+(1 row)
+
+                             resultado                             
+-------------------------------------------------------------------
+ SESION B: la actualizacion se aplico tras esperar el COMMIT de A.
+(1 row)
+
