@@ -46,6 +46,10 @@ BEGIN
 END;
 $$;
 
+-- RN-09: stock inicial del vino vendido en esta prueba (sala 980101).
+INSERT INTO "Stock_Sala"(sala, vino, cantidad)
+VALUES (980101, 'RN08-R', 999);
+
 INSERT INTO "Comprobante"(numero, fecha, cliente, sala)
 VALUES (980101, CURRENT_DATE, 980101, 980101);
 

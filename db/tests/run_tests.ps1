@@ -4,6 +4,10 @@
 #
 # No modifica bodegas_atuel ni volúmenes Docker.
 
+param(
+    [string]$TestName = ''
+)
+
 $ErrorActionPreference = 'Stop'
 
 $script:container = 'bodegas-atuel-db'
@@ -13,19 +17,41 @@ $script:testDb = 'rn_tests_tmp'
 $script:projectRoot = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
 $script:migrationRoot = Join-Path $script:projectRoot 'db\migrations'
 
-$migrations = @(
-    '001_esquema.sql',
-    '002_constraints.sql',
-    '003_rn05_composicion_deferred.sql',
-    '004_rn03_rn06.sql',
-    '005_rn08_comprobante.sql'
-)
+$migrations = Get-ChildItem $script:migrationRoot -Filter '0*.sql' |
+    Where-Object { $_.Name -notmatch '\.bak$|\.pre' } |
+    Sort-Object Name |
+    ForEach-Object { $_.Name }
 
 $okFiles = Get-ChildItem $PSScriptRoot -Filter '*.ok.sql' |
     Sort-Object Name
 
 $failFiles = Get-ChildItem $PSScriptRoot -Filter '*.fail.sql' |
     Sort-Object Name
+    if (-not [string]::IsNullOrWhiteSpace($TestName)) {
+    $selectedFiles = @(
+        $okFiles + $failFiles |
+            Where-Object { $_.Name -eq $TestName }
+    )
+
+    if ($selectedFiles.Count -ne 1) {
+        throw "No se encontró exactamente una prueba llamada: $TestName"
+    }
+
+    $okFiles = @($okFiles | Where-Object { $_.Name -eq $TestName })
+    $failFiles = @($failFiles | Where-Object { $_.Name -eq $TestName })
+}
+$expectedSqlStates = @{
+    'rn05_delete_incompleto.fail.sql' = 'P0001'
+    'rn05_suma_mayor.fail.sql'         = 'P0001'
+    'rn05_suma_menor.fail.sql'         = 'P0001'
+    'rn05_vino_sin_composicion.fail.sql' = 'P0001'
+    'rn06_cliente_sin_subtipo.fail.sql' = '23514'
+    'rn10_ingreso_en_confeccion.fail.sql' = '23514'
+    'rn10_ingreso_vacio.fail.sql'      = '23514'
+    'rn10_reproceso.fail.sql'          = '23514'
+    'rn11_reproceso.fail.sql'          = '23514'
+    'rn11_stock_insuficiente.fail.sql' = '23514'
+}
 
 function Invoke-PsqlFile {
     param(
@@ -57,6 +83,7 @@ function Invoke-PsqlFile {
             -U $script:pgUser `
             -d $Database `
             -v ON_ERROR_STOP=1 `
+            -c '\set VERBOSITY verbose' `
             -f $remoteFile 2>&1
 
         $exitCode = $LASTEXITCODE
@@ -100,12 +127,35 @@ function Invoke-PsqlExpectedFailure {
 
     $testName = [IO.Path]::GetFileName($File)
 
-    if ($testName -like 'rn05_*' -and $result.Output -notmatch 'RN-05') {
-        throw "La prueba no fallo por RN-05 como se esperaba: $File`n$($result.Output)"
+    if (-not $expectedSqlStates.ContainsKey($testName)) {
+        throw "No hay SQLSTATE esperado definido para: $testName"
     }
 
-    if ($testName -like 'rn06_*' -and $result.Output -notmatch 'RN-06') {
-        throw "La prueba no fallo por RN-06 como se esperaba: $File`n$($result.Output)"
+    $sqlStateEsperado = $expectedSqlStates[$testName]
+
+    if ($result.Output -notmatch '(?m)ERROR:\s+([A-Z0-9]{5}):') {
+        throw "No se pudo identificar el SQLSTATE del error: $File`n$($result.Output)"
+    }
+
+    $sqlStateObtenido = $Matches[1]
+
+    if ($sqlStateObtenido -ne $sqlStateEsperado) {
+        throw "SQLSTATE incorrecto en $File. Esperado: $sqlStateEsperado. Obtenido: $sqlStateObtenido.`n$($result.Output)"
+    }
+
+    # También exige que el mensaje mencione la regla correspondiente.
+    if ($testName -match '^rn(\d+_|\d+)') {
+        $regla = $Matches[1].TrimEnd('_')
+
+        if ($regla -match '^\d+$') {
+            $reglaEsperada = 'RN-' + $regla.PadLeft(2, '0')
+        } else {
+            $reglaEsperada = 'RN-' + $regla
+        }
+
+        if ($result.Output -notmatch [regex]::Escape($reglaEsperada)) {
+            throw "La prueba no falló por $reglaEsperada como se esperaba: $File`n$($result.Output)"
+        }
     }
 
     return $result.Output
@@ -158,12 +208,12 @@ if ($LASTEXITCODE -ne 0 -or $running -ne 'true') {
     throw "El contenedor PostgreSQL no está disponible."
 }
 
-if ($okFiles.Count -eq 0) {
-    throw "No se encontraron pruebas positivas."
+if (($okFiles.Count + $failFiles.Count) -eq 0) {
+    throw "No se encontraron pruebas para ejecutar."
 }
 
-if ($migrations.Count -ne 5) {
-    throw "La lista de migraciones no es la esperada."
+if ($migrations.Count -lt 5) {
+    throw "No hay suficientes migraciones."
 }
 
 foreach ($migration in $migrations) {

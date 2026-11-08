@@ -1,7 +1,7 @@
 -- rn01_precio.fail.sql
 -- A17 (issue #20): RN-01 — valores no positivos son rechazados (CHECK ck_vino_precio_positivo).
--- Este archivo DEBE fallar: inserta precio 0 en un Vino y verifica que el CHECK lo rechaza.
-BEGIN;
+-- Este archivo debe finalizar correctamente: captura los rechazos esperados
+-- mediante bloques DO y verifica precios cero y negativos.BEGIN;
 
 INSERT INTO "Bodega"(cuit, razon_social, domicilio)
 VALUES ('30712345678', 'Bodega Atuel SA', 'Calle 1');

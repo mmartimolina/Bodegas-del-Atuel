@@ -32,6 +32,10 @@ INSERT INTO "Cliente"(id_cliente, nombre)
 OVERRIDING SYSTEM VALUE
 VALUES (980001, 'Cliente socio RN-08');
 
+-- RN-09: stock inicial de la sala para los vinos vendidos en esta prueba.
+INSERT INTO "Stock_Sala"(sala, vino, cantidad)
+VALUES (980001, 'RN08-A', 999), (980001, 'RN08-B', 999);
+
 INSERT INTO "Socio"(id_cliente)
 VALUES (980001);
 
