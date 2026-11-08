@@ -14,6 +14,38 @@ $script:container = 'bodegas-atuel-db'
 $script:pgUser = 'bodegas_app'
 $script:testDb = 'rn_tests_tmp'
 
+# Conexion por TCP al servidor PostgreSQL del contenedor (mapeado en localhost).
+# Se leen POSTGRES_USER, POSTGRES_PASSWORD y POSTGRES_PORT del .env del repositorio.
+$script:projectRoot = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
+$script:envFile = Join-Path $script:projectRoot '.env'
+if (-not (Test-Path $script:envFile)) {
+    throw "Falta el archivo .env con las credenciales de PostgreSQL."
+}
+
+foreach ($line in (Get-Content $script:envFile)) {
+    if ($line -match '^POSTGRES_(USER|PASSWORD|PORT)=(.*)$') {
+        Set-Variable -Scope Script -Name ("pg" + $Matches[1]) -Value $Matches[2]
+    }
+}
+
+$script:pgPortDefault = 5433
+if (-not (Get-Variable -Scope Script -Name 'pgPORT' -ErrorAction SilentlyContinue)) {
+    $script:pgPORT = $script:pgPortDefault
+}
+
+$script:psql = @(
+    (Get-Command psql -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source),
+    'C:\Program Files\PostgreSQL\18\bin\psql.exe'
+) | Where-Object { $_ -and (Test-Path $_) } | Select-Object -First 1
+
+if (-not $script:psql) {
+    throw "No se encontró el cliente psql."
+}
+
+if ($script:pgPASSWORD) {
+    $env:PGPASSWORD = $script:pgPASSWORD
+}
+
 $script:projectRoot = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
 $script:migrationRoot = Join-Path $script:projectRoot 'db\migrations'
 
@@ -59,32 +91,18 @@ function Invoke-PsqlFile {
         [string]$LocalFile
     )
 
-    if (-not (Test-Path -LiteralPath $LocalFile)) {
-        throw "No existe el archivo: $LocalFile"
-    }
-
-    $remoteFile = "/tmp/rn_test_$([IO.Path]::GetFileName($LocalFile))"
-
-    $oldPreference = $ErrorActionPreference
     $ErrorActionPreference = 'Continue'
 
     try {
-        & docker cp $LocalFile "${script:container}:$remoteFile" 2>$null |
-            Out-Null
-
-        $copyExitCode = $LASTEXITCODE
-
-        if ($copyExitCode -ne 0) {
-            throw "No se pudo copiar $LocalFile al contenedor."
-        }
-
-        $output = & docker exec $script:container psql `
+        $output = & $script:psql `
             -X `
+            -h localhost `
+            -p $script:pgPORT `
             -U $script:pgUser `
             -d $Database `
             -v ON_ERROR_STOP=1 `
-            -c '\set VERBOSITY verbose' `
-            -f $remoteFile 2>&1
+            -v VERBOSITY=verbose `
+            -f $LocalFile 2>&1
 
         $exitCode = $LASTEXITCODE
     }
@@ -164,19 +182,19 @@ function Invoke-PsqlExpectedFailure {
 function New-TestDb {
     Write-Host "  Preparando base temporal..." -ForegroundColor DarkGray
 
-    & docker exec $script:container dropdb `
-        --if-exists `
-        -U $script:pgUser `
-        $script:testDb
+    & $script:psql -X -h localhost -p $script:pgPORT -U $script:pgUser `
+        -d postgres -q `
+        -v ON_ERROR_STOP=1 `
+        -c "DROP DATABASE IF EXISTS $script:testDb;"
 
     if ($LASTEXITCODE -ne 0) {
         throw "No se pudo eliminar la base temporal anterior."
     }
 
-    & docker exec $script:container createdb `
-        -U $script:pgUser `
-        -O $script:pgUser `
-        $script:testDb
+    & $script:psql -X -h localhost -p $script:pgPORT -U $script:pgUser `
+        -d postgres -q `
+        -v ON_ERROR_STOP=1 `
+        -c "CREATE DATABASE $script:testDb OWNER $script:pgUser;"
 
     if ($LASTEXITCODE -ne 0) {
         throw "No se pudo crear la base temporal."
@@ -184,10 +202,10 @@ function New-TestDb {
 }
 
 function Remove-TestDb {
-    & docker exec $script:container dropdb `
-        --if-exists `
-        -U $script:pgUser `
-        $script:testDb
+    & $script:psql -X -h localhost -p $script:pgPORT -U $script:pgUser `
+        -d postgres -q `
+        -v ON_ERROR_STOP=1 `
+        -c "DROP DATABASE IF EXISTS $script:testDb;"
 
     if ($LASTEXITCODE -ne 0) {
         Write-Host "ADVERTENCIA: no se pudo eliminar rn_tests_tmp." -ForegroundColor Yellow
@@ -202,14 +220,16 @@ if ($script:testDb -eq 'bodegas_atuel') {
     throw "Protección: no se permite utilizar la base de desarrollo."
 }
 
-$running = & docker inspect -f '{{.State.Running}}' $script:container
-
-if ($LASTEXITCODE -ne 0 -or $running -ne 'true') {
-    throw "El contenedor PostgreSQL no está disponible."
-}
-
 if (($okFiles.Count + $failFiles.Count) -eq 0) {
     throw "No se encontraron pruebas para ejecutar."
+}
+
+# Conexion al servidor por TCP.
+& $script:psql -X -h localhost -p $script:pgPORT -U $script:pgUser `
+    -d postgres -q -tAc "SELECT 1;" | Out-Null
+
+if ($LASTEXITCODE -ne 0) {
+    throw "El servidor PostgreSQL no está disponible."
 }
 
 if ($migrations.Count -lt 5) {
