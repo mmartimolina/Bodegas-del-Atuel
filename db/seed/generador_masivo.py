@@ -8,7 +8,7 @@ fake = Faker('es_AR')
 Faker.seed(42)
 
 def ejecutar_carga_masiva():
-    print("--- INICIANDO LA CARGA MASIVA DE DATOS DE PRUEBA (B-01 a B-04) ---")
+    print("--- INICIANDO LA CARGA MASIVA DE DATOS DE PRUEBA (B-01 a B-05) ---")
     
     try:
         # Conexión a la base de datos PostgreSQL con tus credenciales reales
@@ -20,6 +20,24 @@ def ejecutar_carga_masiva():
         ) as conexion:
             with conexion.cursor() as cursor:
                 
+                # 0. Limpiar tablas y reiniciar secuencias de ID de forma limpia
+                print("Limpiando datos previos y reiniciando secuencias...")
+                cursor.execute("""
+                    TRUNCATE TABLE 
+                        "Comprobante", 
+                        "Exportador", 
+                        "Distribuidor", 
+                        "Socio", 
+                        "Cliente", 
+                        "Finca", 
+                        "Empleado", 
+                        "Sala", 
+                        "Localidad", 
+                        "Maridaje", 
+                        "Cepa" 
+                    RESTART IDENTITY CASCADE;
+                """)
+
                 # 1. Insertar Cepas (Tabla "Cepa")
                 print("Generando Cepas...")
                 cepas_data = [
@@ -62,7 +80,7 @@ def ejecutar_carga_masiva():
                     localidades_data
                 )
 
-                # 4. Insertar Salas (Tabla "Sala") - Depende de Localidad (id 1 y 2)
+                # 4. Insertar Salas (Tabla "Sala") - Depende de Localidad (ID 1 y 2)
                 print("Generando Salas...")
                 salas_data = [
                     ("San Martín", 120, "Domingo", 1),
@@ -73,7 +91,7 @@ def ejecutar_carga_masiva():
                     salas_data
                 )
 
-                # 5. Insertar Empleados (Tabla "Empleado") - Depende de Sala (id 1 y 2)
+                # 5. Insertar Empleados (Tabla "Empleado") - Depende de Sala
                 print("Generando Empleados...")
                 empleados_data = [
                     ("20333444552", "Ana Torres", "2023-03-10", 850000.00, 1),
@@ -95,9 +113,42 @@ def ejecutar_carga_masiva():
                     fincas_data
                 )
 
+                # 7. Insertar Clientes (Tabla "Cliente" y sus subtipos - RN-06)
+                print("Generando Clientes...")
+                clientes_data = [
+                    ("Juan Pérez", "DNI", "30111222", "San Martín 100", 1),
+                    ("Comercial Cuyo S.A.", "CUIT", "30555666779", "Belgrano 500", 2),
+                    ("Global Wine Corp", "Pasaporte", "AB123456", "International Ave 300", 1)
+                ]
+                
+                for nombre, tipo_doc, n_doc, direccion, localidad in clientes_data:
+                    cursor.execute(
+                        'INSERT INTO "Cliente" (nombre, tipo_doc, n_doc, direccion, localidad) VALUES (%s, %s, %s, %s, %s) RETURNING id_cliente',
+                        (nombre, tipo_doc, n_doc, direccion, localidad)
+                    )
+                    id_cliente = cursor.fetchone()[0]
+                    
+                    if id_cliente == 1:
+                        cursor.execute('INSERT INTO "Socio" (id_cliente) VALUES (%s)', (id_cliente,))
+                    elif id_cliente == 2:
+                        cursor.execute('INSERT INTO "Distribuidor" (id_cliente, zona, n_habilitacion) VALUES (%s, %s, %s)', (id_cliente, "Centro", "DIST-9988"))
+                    elif id_cliente == 3:
+                        cursor.execute('INSERT INTO "Exportador" (id_cliente, pais) VALUES (%s, %s)', (id_cliente, "Estados Unidos"))
+
+                # 8. Insertar Comprobantes (Tabla "Comprobante" - RN-08: importes calculados por trigger)
+                print("Generando Comprobantes...")
+                comprobantes_data = [
+                    (1001, "2026-10-01", 1, 1),
+                    (1002, "2026-10-02", 2, 2)
+                ]
+                cursor.executemany(
+                    'INSERT INTO "Comprobante" (numero, fecha, cliente, sala) VALUES (%s, %s, %s, %s)',
+                    comprobantes_data
+                )
+
                 # Confirmar cambios en la base de datos
                 conexion.commit()
-                print("\n--- ¡CARGA MASIVA B-04 FINALIZADA CON ÉXITO! ---")
+                print("\n--- ¡CARGA MASIVA B-05 FINALIZADA CON ÉXITO! ---")
 
     except Exception as e:
         print("\n--- ERROR EN LA CARGA MASIVA ---")
