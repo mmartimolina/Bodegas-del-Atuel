@@ -8,7 +8,7 @@ fake = Faker('es_AR')
 Faker.seed(42)
 
 def ejecutar_carga_masiva():
-    print("--- INICIANDO LA CARGA MASIVA DE DATOS DE PRUEBA ---")
+    print("--- INICIANDO LA CARGA MASIVA DE DATOS DE PRUEBA (B-01 a B-04) ---")
     
     try:
         # Conexión a la base de datos PostgreSQL con tus credenciales reales
@@ -62,9 +62,42 @@ def ejecutar_carga_masiva():
                     localidades_data
                 )
 
+                # 4. Insertar Salas (Tabla "Sala") - Depende de Localidad (id 1 y 2)
+                print("Generando Salas...")
+                salas_data = [
+                    ("San Martín", 120, "Domingo", 1),
+                    ("Av. Mitre", 450, "Lunes", 2)
+                ]
+                cursor.executemany(
+                    'INSERT INTO "Sala" (calle, numero, dia_cierre, localidad) VALUES (%s, %s, %s, %s)',
+                    salas_data
+                )
+
+                # 5. Insertar Empleados (Tabla "Empleado") - Depende de Sala (id 1 y 2)
+                print("Generando Empleados...")
+                empleados_data = [
+                    ("20333444552", "Ana Torres", "2023-03-10", 850000.00, 1),
+                    ("27444555663", "Luis Gómez", "2023-05-15", 900000.00, 2)
+                ]
+                cursor.executemany(
+                    'INSERT INTO "Empleado" (cuit, nombre, fecha_ingreso, salario, sala) VALUES (%s, %s, %s, %s, %s)',
+                    empleados_data
+                )
+
+                # 6. Insertar Fincas (Tabla "Finca")
+                print("Generando Fincas...")
+                fincas_data = [
+                    ("Finca El Atuel", 150.50, "San Rafael", "Mendoza"),
+                    ("Finca Los Álamos", 95.00, "San Rafael", "Mendoza")
+                ]
+                cursor.executemany(
+                    'INSERT INTO "Finca" (nombre, superficie, departamento, provincia) VALUES (%s, %s, %s, %s)',
+                    fincas_data
+                )
+
                 # Confirmar cambios en la base de datos
                 conexion.commit()
-                print("\n--- ¡CARGA MASIVA FINALIZADA CON ÉXITO! ---")
+                print("\n--- ¡CARGA MASIVA B-04 FINALIZADA CON ÉXITO! ---")
 
     except Exception as e:
         print("\n--- ERROR EN LA CARGA MASIVA ---")
