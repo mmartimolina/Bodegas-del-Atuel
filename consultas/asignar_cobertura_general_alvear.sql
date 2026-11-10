@@ -4,7 +4,8 @@
 
 BEGIN;
 
--- 1. Determinar el transportista con menor cantidad de ingresos en el último trimestre
+-- 1. Determinar el transportista con menos ingresos del trimestre movil.
+-- El filtro temporal pertenece al JOIN para incluir transportistas con cero envios.
 WITH trimestre_actual AS (
     SELECT 
         CURRENT_DATE - INTERVAL '3 months' AS fecha_inicio,
@@ -13,11 +14,12 @@ WITH trimestre_actual AS (
 transportista_con_menos_ingresos AS (
     SELECT t.codigo AS transportista_codigo
     FROM "Transportista" t
-    LEFT JOIN "Ingreso" i ON t.codigo = i.transportista
     CROSS JOIN trimestre_actual ta
-    WHERE i.fecha >= ta.fecha_inicio AND i.fecha <= ta.fecha_fin
+    LEFT JOIN "Ingreso" i ON t.codigo = i.transportista
+                         AND i.fecha >= ta.fecha_inicio
+                         AND i.fecha <= ta.fecha_fin
     GROUP BY t.codigo
-    ORDER BY COUNT(i.codigo) ASC
+    ORDER BY COUNT(i.codigo) ASC, t.codigo ASC
     LIMIT 1
 )
 -- 2. Insertar la cobertura utilizando las columnas correctas (transportista, localidad)

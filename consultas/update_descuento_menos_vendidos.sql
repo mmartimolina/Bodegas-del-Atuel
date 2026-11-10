@@ -40,5 +40,4 @@ WHERE v.codigo IN (
 SELECT * FROM "Auditoria_Precio"
 LIMIT 10;
 
--- Confirmar los cambios definitivamente
-COMMIT;
+ROLLBACK;

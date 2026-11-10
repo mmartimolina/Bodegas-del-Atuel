@@ -25,6 +25,5 @@ SELECT
 FROM "Empleado" e
 WHERE AGE(CURRENT_DATE, e.fecha_ingreso) > INTERVAL '5 years';
 
--- Descomentar COMMIT para confirmar los cambios definitivamente, o ROLLBACK para cancelar:
-COMMIT;
--- ROLLBACK;
+-- La prueba no persiste cambios; revisar y sustituir por COMMIT para aplicar.
+ROLLBACK;

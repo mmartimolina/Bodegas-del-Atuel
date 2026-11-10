@@ -18,7 +18,7 @@ Todas las tablas quedan con al menos una fila; tres superan las 10.000 filas
 
 ## Requisitos
 
-- PostgreSQL con el esquema del proyecto aplicado (`db/migrations/001..013`).
+- PostgreSQL con el esquema del proyecto aplicado (`db/migrations/001..014`).
 - Python 3.12+ con `psycopg` (3.x) y `faker`:
   `pip install psycopg faker`
 

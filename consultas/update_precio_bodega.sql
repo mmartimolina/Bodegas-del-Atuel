@@ -3,19 +3,16 @@
 
 BEGIN;
 
--- 1. Visualizar vinos y precios ANTES del incremento para la Bodega Atuel S.A.
-SELECT 
-    v.codigo, 
-    v.nombre, 
-    v.bodega, 
-    v.precio AS precio_anterior
+-- 1. Elegir de forma determinista una bodega existente y mostrar sus vinos.
+SELECT v.codigo, v.nombre, v.bodega, v.precio AS precio_anterior
 FROM "Vino" v
-WHERE v.bodega = '30112233449';
+WHERE v.bodega = (SELECT cuit FROM "Bodega" ORDER BY cuit LIMIT 1)
+ORDER BY v.codigo;
 
 -- 2. Ejecutar UPDATE (Aumento del 13%)
-UPDATE "Vino"
-SET precio = ROUND(precio * 1.13, 2)
-WHERE bodega = '30112233449';
+UPDATE "Vino" v
+SET precio = ROUND(v.precio * 1.13, 2)
+WHERE v.bodega = (SELECT cuit FROM "Bodega" ORDER BY cuit LIMIT 1);
 
 -- 3. Visualizar vinos y precios DESPUÉS del incremento
 SELECT 
@@ -24,7 +21,8 @@ SELECT
     v.bodega, 
     v.precio AS precio_actualizado
 FROM "Vino" v
-WHERE v.bodega = '30112233449';
+WHERE v.bodega = (SELECT cuit FROM "Bodega" ORDER BY cuit LIMIT 1)
+ORDER BY v.codigo;
 
 -- 4. Comprobar auditoría automática del trigger (RN-13)
 SELECT * 
@@ -32,6 +30,5 @@ FROM "Auditoria_Precio"
 ORDER BY fecha_hora DESC 
 LIMIT 5;
 
--- Confirmar los cambios definitivamente:
-COMMIT;
--- ROLLBACK;
+-- El trigger RN-13 tambien queda sujeto al rollback de esta prueba.
+ROLLBACK;

@@ -13,9 +13,9 @@ JOIN "Permiso_Exportacion" p ON e.id_cliente = p.exportador
 GROUP BY e.id_cliente, e.pais, c.descuento
 HAVING COUNT(p.*) > 3;
 
--- 2. Actualizar el descuento al 35.00 en la tabla Cliente para dichos exportadores
+-- 2. Recalcular el descuento derivado de acuerdo con RN-06/U6.
 UPDATE "Cliente"
-SET descuento = 35.00
+SET descuento = fn_descuento_cliente(id_cliente)
 WHERE id_cliente IN (
     SELECT e.id_cliente
     FROM "Exportador" e
@@ -36,6 +36,4 @@ WHERE c.id_cliente IN (
     HAVING COUNT(p.*) > 3
 );
 
--- Confirmar transacción
-COMMIT;
--- ROLLBACK;
+ROLLBACK;

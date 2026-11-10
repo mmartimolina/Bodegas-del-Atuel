@@ -30,6 +30,7 @@ DECLARE
     v_distribuidor BOOLEAN;
     v_exportador  BOOLEAN;
     v_cantidad    INTEGER;
+    v_permisos    INTEGER;
 BEGIN
     IF NOT EXISTS (
         SELECT 1
@@ -64,6 +65,15 @@ BEGIN
     ELSIF v_distribuidor THEN
         RETURN 20.00;
     ELSE
+        SELECT COUNT(*)
+          INTO v_permisos
+          FROM "Permiso_Exportacion"
+         WHERE exportador = p_id_cliente;
+
+        IF v_permisos > 3 THEN
+            RETURN 35.00;
+        END IF;
+
         RETURN 30.00;
     END IF;
 END;
@@ -251,6 +261,6 @@ EXECUTE FUNCTION fn_cliente_validar_descuento_final_trigger();
 
 
 COMMENT ON FUNCTION fn_descuento_cliente(BIGINT) IS
-    'RN-06: devuelve 10 para Socio, 20 para Distribuidor y 30 para Exportador. U6 permanece pendiente.';
+    'RN-06/U6: devuelve 10 para Socio, 20 para Distribuidor, 30 para Exportador con hasta 3 permisos y 35 con más de 3.';
 
 COMMIT;

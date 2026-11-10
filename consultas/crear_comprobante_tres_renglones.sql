@@ -1,41 +1,68 @@
--- Issue B-17: Crear comprobante con tres renglones
--- Descripción: Crea un comprobante para un cliente dado en la sala ID 1,
--- con tres renglones, dentro de una transacción y usando funciones automáticas.
+-- Issue B-17 / I3: crear comprobante con exactamente tres renglones.
+-- Bloquea la tabla para asignar el siguiente numero sin colisiones concurrentes.
 
 BEGIN;
 
--- 1. Insertar la cabecera del comprobante para el primer cliente disponible y sala ID 1
+LOCK TABLE "Comprobante" IN EXCLUSIVE MODE;
+
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM "Cliente") THEN
+        RAISE EXCEPTION 'I3: se requiere al menos un cliente.';
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM "Sala" WHERE id_sala = 1) THEN
+        RAISE EXCEPTION 'I3: no existe la sala 1.';
+    END IF;
+    IF (
+        SELECT COUNT(*)
+        FROM "Vino" v
+        JOIN "Stock_Sala" ss ON ss.vino = v.codigo
+        WHERE ss.sala = 1 AND ss.cantidad >= 2
+    ) < 3 THEN
+        RAISE EXCEPTION 'I3: se requieren tres vinos distintos con stock suficiente en sala 1.';
+    END IF;
+END;
+$$;
+
 INSERT INTO "Comprobante" (numero, fecha, cliente, sala)
 VALUES (
     (SELECT COALESCE(MAX(numero), 0) + 1 FROM "Comprobante"),
     CURRENT_DATE,
-    (SELECT id_cliente FROM "Cliente" LIMIT 1),
+    (SELECT id_cliente FROM "Cliente" ORDER BY id_cliente LIMIT 1),
     1
 );
 
--- 2. Insertar 3 renglones tomando 3 vinos que tengan stock suficiente en la Sala 1.
 INSERT INTO "Renglon_Comprobante" (comprobante, vino, cantidad, precio_unitario)
-SELECT 
-    (SELECT MAX(numero) FROM "Comprobante"),
-    v.codigo,
-    2 AS cantidad,               -- Cantidad de prueba
-    v.precio AS precio_unitario  -- Precio obtenido de la tabla "Vino"
+SELECT (SELECT MAX(numero) FROM "Comprobante"),
+       v.codigo,
+       2,
+       v.precio
 FROM "Vino" v
 JOIN "Stock_Sala" ss ON ss.vino = v.codigo
-WHERE ss.sala = 1 
+WHERE ss.sala = 1
   AND ss.cantidad >= 2
+ORDER BY v.codigo
 LIMIT 3;
 
--- 3. Verificación de la cabecera del comprobante creado y sus totales
+DO $$
+BEGIN
+    IF (
+        SELECT COUNT(*)
+        FROM "Renglon_Comprobante"
+        WHERE comprobante = (SELECT MAX(numero) FROM "Comprobante")
+    ) <> 3 THEN
+        RAISE EXCEPTION 'I3: el comprobante no tiene exactamente tres renglones.';
+    END IF;
+END;
+$$;
+
 SELECT numero, fecha, cliente, sala, subtotal, descuento, total
 FROM "Comprobante"
 WHERE numero = (SELECT MAX(numero) FROM "Comprobante");
 
--- 4. Verificación de los renglones asociados
 SELECT comprobante, vino, cantidad, precio_unitario, descuento, subtotal
 FROM "Renglon_Comprobante"
-WHERE comprobante = (SELECT MAX(numero) FROM "Comprobante");
+WHERE comprobante = (SELECT MAX(numero) FROM "Comprobante")
+ORDER BY vino;
 
--- Confirmar transacción
 COMMIT;
--- ROLLBACK;

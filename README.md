@@ -52,7 +52,7 @@ La contraseña es elegida por cada integrante y debe mantenerse en su entorno lo
 - Cada integrante puede utilizar una contraseña diferente.
 - El puerto local `5433` permite evitar conflictos con instalaciones de PostgreSQL que utilicen el puerto `5432`.
 
-## 4. Iniciar PostgreSQL
+## 4. Iniciar los servicios
 
 Desde la carpeta raíz del proyecto, ejecutar:
 
@@ -60,15 +60,24 @@ Desde la carpeta raíz del proyecto, ejecutar:
 docker compose up -d
 ```
 
-Este comando crea e inicia el contenedor de PostgreSQL en segundo plano.
+Este comando crea e inicia PostgreSQL, la API y el frontend en segundo plano.
+La API espera que PostgreSQL esté saludable y el frontend espera que la API
+responda a su healthcheck.
 
-### 4.1. Verificar el estado del servicio
+En una base nueva, PostgreSQL aplica automáticamente las migraciones
+`db/migrations/001..014` en orden. Los scripts de inicialización de la imagen
+oficial solo se ejecutan cuando el directorio de datos está vacío. Si ya existe
+un volumen de una instalación anterior, crear una copia de seguridad y aplicar
+manualmente únicamente las migraciones pendientes antes de iniciar la API; no
+borres el volumen para forzar una inicialización.
+
+### 4.1. Verificar el estado
 
 ```powershell
 docker compose ps
 ```
 
-El servicio debe aparecer con estado `healthy`.
+PostgreSQL y la API deben aparecer con estado `healthy`.
 
 ### 4.2. Consultar los registros
 
@@ -77,6 +86,9 @@ docker compose logs -f postgres
 ```
 
 Para salir de la visualización de registros, presionar `Ctrl + C`. Esto no detiene el contenedor.
+
+Para consultar los registros de la API o el frontend, usar
+`docker compose logs -f api` o `docker compose logs -f frontend`.
 
 ## 5. Conexión desde un cliente SQL
 
@@ -171,13 +183,68 @@ El estado puede consultarse mediante:
 docker compose ps
 ```
 
-## 9. Organización del proyecto
+## 9. Aplicación web y API
+
+Compose inicia PostgreSQL, la API FastAPI y el frontend estático. Cuando los
+servicios estén saludables, abrí `http://localhost:8080`; la documentación
+interactiva de la API está en `http://localhost:8000/docs`.
+
+La API utiliza Python 3.12, FastAPI y psycopg 3. Las consultas SQL están
+parametrizadas y organizadas en `api/app/repositories/`; no se usa ORM. En
+Compose, la aplicación se conecta como `bodegas_app` y ejecuta las operaciones
+con `SET ROLE bodegas_api`. Para correrla fuera de Docker, instalá las
+dependencias y configurá `DB_HOST=localhost`, `DB_PORT` igual a `POSTGRES_PORT`
+y las credenciales locales del archivo `.env`:
+
+```powershell
+py -3.12 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r api\requirements-dev.txt
+$env:PYTHONPATH = "api"
+python -m uvicorn app.main:app --reload
+```
+
+La base debe estar migrada y contener los datos de referencia antes de usar
+formularios de vinos, ventas y movimientos. Las instrucciones para preparar la
+carga de datos están en [db/seed/README.md](db/seed/README.md).
+La descripción de cada variable de entorno está en
+[docs/configuracion.md](docs/configuracion.md). Los bocetos y el mapeo de
+pantallas a endpoints están en
+[docs/frontend/wireframes.md](docs/frontend/wireframes.md).
+El detalle de rutas, parámetros, ejemplos y errores está en
+[docs/api.md](docs/api.md); la especificación ejecutable se publica en
+`/openapi.json`.
+
+### Pruebas y calidad
+
+Desde la raíz, ejecutá:
+
+```powershell
+python -m pytest api\tests
+python -m ruff check api
+python -m ruff format --check api
+node --check front\app.js
+docker compose config --quiet
+```
+
+Las pruebas HTTP de la API no escriben en PostgreSQL. Las pruebas SQL se
+ejecutan con `db\tests\run_tests.ps1` contra una base temporal y requieren
+`psql`; nunca uses la base de desarrollo para esa suite.
+
+## 10. Organización del proyecto
 
 ```text
 Bodegas-del-Atuel/
 │
 ├── db/
-│   └── migrations/
+│   ├── migrations/
+│   ├── seed/
+│   └── tests/
+├── api/
+│   ├── app/
+│   └── tests/
+├── front/
+├── consultas/
 │
 ├── docs/
 │   ├── consigna/
@@ -192,7 +259,7 @@ Bodegas-del-Atuel/
 
 La estructura puede ampliarse a medida que avance el desarrollo.
 
-## 10. Trabajo colaborativo
+## 11. Trabajo colaborativo
 
 Cada integrante trabaja con su propia instancia local de PostgreSQL.
 

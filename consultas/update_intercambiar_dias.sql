@@ -3,8 +3,7 @@
 BEGIN;
 
 -- 1. Visualizar estado ANTES del intercambio
-SELECT id_sala, calle, numero, dia_cierre 
-FROM "Sala";
+SELECT id_sala, calle, numero, dia_cierre FROM "Sala" ORDER BY id_sala;
 
 -- 2. Ejecutar UPDATE en una sola sentencia usando CASE para evitar sobreescritura
 UPDATE "Sala"
@@ -16,9 +15,6 @@ END
 WHERE dia_cierre IN ('Lunes', 'Miercoles');
 
 -- 3. Visualizar estado DESPUÉS del intercambio
-SELECT id_sala, calle, numero, dia_cierre 
-FROM "Sala";
+SELECT id_sala, calle, numero, dia_cierre FROM "Sala" ORDER BY id_sala;
 
--- Confirmar los cambios definitivamente:
-COMMIT;
--- ROLLBACK;
+ROLLBACK;

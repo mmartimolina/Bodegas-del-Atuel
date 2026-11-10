@@ -5,32 +5,49 @@
 # No modifica bodegas_atuel ni volúmenes Docker.
 
 param(
-    [string]$TestName = ''
+    [string]$TestName = '',
+    [string]$DatabaseHost = 'localhost',
+    [int]$DatabasePort = 0,
+    [string]$DatabaseUser = '',
+    [string]$DatabasePassword = '',
+    [string]$TestDatabase = 'rn_tests_tmp'
 )
 
 $ErrorActionPreference = 'Stop'
 
-$script:container = 'bodegas-atuel-db'
-$script:pgUser = 'bodegas_app'
-$script:testDb = 'rn_tests_tmp'
+$script:pgHost = $DatabaseHost
+$script:pgPort = $DatabasePort
+$script:pgUser = $DatabaseUser
+$script:pgPassword = $DatabasePassword
+$script:testDb = $TestDatabase
 
-# Conexion por TCP al servidor PostgreSQL del contenedor (mapeado en localhost).
-# Se leen POSTGRES_USER, POSTGRES_PASSWORD y POSTGRES_PORT del .env del repositorio.
+# Si no se proporcionan parametros, se usa la configuracion local del .env.
 $script:projectRoot = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
 $script:envFile = Join-Path $script:projectRoot '.env'
-if (-not (Test-Path $script:envFile)) {
-    throw "Falta el archivo .env con las credenciales de PostgreSQL."
-}
 
-foreach ($line in (Get-Content $script:envFile)) {
-    if ($line -match '^POSTGRES_(USER|PASSWORD|PORT)=(.*)$') {
-        Set-Variable -Scope Script -Name ("pg" + $Matches[1]) -Value $Matches[2]
+if (Test-Path $script:envFile) {
+    foreach ($line in (Get-Content $script:envFile)) {
+        if ($line -match '^POSTGRES_(USER|PASSWORD|PORT)=(.*)$') {
+            $name = $Matches[1]
+            if ($name -eq 'USER' -and -not $script:pgUser) {
+                $script:pgUser = $Matches[2]
+            } elseif ($name -eq 'PASSWORD' -and -not $script:pgPassword) {
+                $script:pgPassword = $Matches[2]
+            } elseif ($name -eq 'PORT' -and -not $script:pgPort) {
+                $script:pgPort = [int]$Matches[2]
+            }
+        }
     }
 }
 
-$script:pgPortDefault = 5433
-if (-not (Get-Variable -Scope Script -Name 'pgPORT' -ErrorAction SilentlyContinue)) {
-    $script:pgPORT = $script:pgPortDefault
+if (-not $script:pgPort) {
+    $script:pgPort = 5433
+}
+if (-not $script:pgUser) {
+    $script:pgUser = 'bodegas_app'
+}
+if ($script:testDb -notmatch '^[A-Za-z0-9_]+$') {
+    throw "El nombre de la base temporal solo puede contener letras, numeros y guion bajo."
 }
 
 $script:psql = @(
@@ -96,8 +113,8 @@ function Invoke-PsqlFile {
     try {
         $output = & $script:psql `
             -X `
-            -h localhost `
-            -p $script:pgPORT `
+            -h $script:pgHost `
+            -p $script:pgPort `
             -U $script:pgUser `
             -d $Database `
             -v ON_ERROR_STOP=1 `
@@ -182,7 +199,7 @@ function Invoke-PsqlExpectedFailure {
 function New-TestDb {
     Write-Host "  Preparando base temporal..." -ForegroundColor DarkGray
 
-    & $script:psql -X -h localhost -p $script:pgPORT -U $script:pgUser `
+    & $script:psql -X -h $script:pgHost -p $script:pgPort -U $script:pgUser `
         -d postgres -q `
         -v ON_ERROR_STOP=1 `
         -c "DROP DATABASE IF EXISTS $script:testDb;"
@@ -191,7 +208,7 @@ function New-TestDb {
         throw "No se pudo eliminar la base temporal anterior."
     }
 
-    & $script:psql -X -h localhost -p $script:pgPORT -U $script:pgUser `
+    & $script:psql -X -h $script:pgHost -p $script:pgPort -U $script:pgUser `
         -d postgres -q `
         -v ON_ERROR_STOP=1 `
         -c "CREATE DATABASE $script:testDb OWNER $script:pgUser;"
@@ -202,7 +219,7 @@ function New-TestDb {
 }
 
 function Remove-TestDb {
-    & $script:psql -X -h localhost -p $script:pgPORT -U $script:pgUser `
+    & $script:psql -X -h $script:pgHost -p $script:pgPort -U $script:pgUser `
         -d postgres -q `
         -v ON_ERROR_STOP=1 `
         -c "DROP DATABASE IF EXISTS $script:testDb;"
@@ -216,7 +233,7 @@ function Remove-TestDb {
 # VALIDACIONES PREVIAS
 # ============================================================
 
-if ($script:testDb -eq 'bodegas_atuel') {
+if ($script:testDb -ieq 'bodegas_atuel') {
     throw "Protección: no se permite utilizar la base de desarrollo."
 }
 
@@ -225,7 +242,7 @@ if (($okFiles.Count + $failFiles.Count) -eq 0) {
 }
 
 # Conexion al servidor por TCP.
-& $script:psql -X -h localhost -p $script:pgPORT -U $script:pgUser `
+& $script:psql -X -h $script:pgHost -p $script:pgPort -U $script:pgUser `
     -d postgres -q -tAc "SELECT 1;" | Out-Null
 
 if ($LASTEXITCODE -ne 0) {
