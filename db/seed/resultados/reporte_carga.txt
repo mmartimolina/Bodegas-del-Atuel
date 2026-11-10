@@ -1,0 +1,68 @@
+Reporte de carga masiva - Bodegas del Atuel (B-01/B-04/B-05)
+Fecha: 2026-11-09 | Semilla: 42 | PostgreSQL local via variables de entorno
+======================================================================
+[catalogos CSV] - filas en 0.5s
+[produccion (bodegas/fincas/parcelas/lotes/analisis)] - filas en 0.1s
+[vinos/composicion/maridajes + auditoria de precios] - filas en 0.1s
+[salas/empleados/transportistas/cobertura] - filas en 0.1s
+[ingresos + transferencias procesadas (RN-10/RN-11)] - filas en 11.5s
+[benchmark] 300 renglones fila-a-fila: 0.07s | executemany: 0.02s | aceleracion ~3x
+[clientes + subtipos + permisos (RN-06 activo)] 26033 filas en 14.2s
+[ventas] renglones generados: 525000
+[ventas masivas (comprobantes/renglones via COPY)] 525000 filas en 74.8s
+Consultas de control:
+  OK  renglones de comprobante sin cabecera: 0 (esperado 0)
+  OK  stock de sala negativo: 0 (esperado 0)
+  OK  stock de deposito negativo: 0 (esperado 0)
+  OK  cabeceras con total != suma de renglones: 0 (esperado 0)
+  OK  renglones con descuento != descuento del cliente: 0 (esperado 0)
+  OK  vinos con composicion != 100: 0 (esperado 0)
+  OK  tablas sin filas: 0 (esperado 0)
+  OK  comprobantes con fecha < alta del cliente: 0 (esperado 0)
+  OK  clientes sin exactamente un subtipo: 0 (esperado 0)
+Conteos por tabla:
+  Analisis                       480
+  Auditoria_Precio                 5
+  Bodega                           8
+  Cepa                            12
+  Cliente                     20,000
+  Composicion                    211
+  Comprobante                150,000
+  Distribuidor                 5,000
+  Empleado                       120
+  Exportador                   3,000
+  Finca                           30
+  Ingreso                      1,200
+  Localidad                       18
+  Lote                           229
+  Maridaje                         8
+  Parcela                        112
+  Permiso_Exportacion          6,033
+  Renglon_Comprobante        525,000
+  Renglon_Ingreso              5,381
+  Renglon_Transferencia        7,175
+  Sala                            24
+  Socio                       12,000
+  Stock_Deposito                 140
+  Stock_Sala                   2,772
+  Transferencia                  900
+  Transportista                   15
+  Transportista_Localidad         49
+  Vino                           140
+  Vino_Maridaje                  280
+  TOTAL                      740,342
+Tablas con mas de 10.000 filas: Cliente, Comprobante, Renglon_Comprobante, Socio
+Tablas con mas de 100.000 filas: Comprobante, Renglon_Comprobante
+[verificaciones de control] 1 filas en 2.9s
+======================================================================
+Tiempos por fase:
+  catalogos CSV                                                     0.5s         0 filas
+  produccion (bodegas/fincas/parcelas/lotes/analisis)               0.1s         0 filas
+  vinos/composicion/maridajes + auditoria de precios                0.1s         0 filas
+  salas/empleados/transportistas/cobertura                          0.1s         0 filas
+  ingresos + transferencias procesadas (RN-10/RN-11)               11.5s         0 filas
+  benchmark fila-a-fila vs lote (300 renglones)                     0.1s       300 filas
+  benchmark lote (300 renglones)                                    0.0s       300 filas
+  clientes + subtipos + permisos (RN-06 activo)                    14.2s    26,033 filas
+  ventas masivas (comprobantes/renglones via COPY)                 74.8s   525,000 filas
+  verificaciones de control                                         2.9s         1 filas
